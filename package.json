@@ -1,0 +1,29 @@
+{
+  "name": "kuzzle-benchmark",
+  "author": "The Kuzzle Team <support@kuzzle.io>",
+  "version": "0.0.1",
+  "description": "Benchmarking tool for Kuzzle",
+  "main": "",
+  "bin": {},
+  "scripts": {
+    "start": "cucumber.js --fail-fast"
+  },
+  "directories": {
+    "features": "features"
+  },
+  "dependencies": {
+    "cucumber": "^1.2.1",
+    "kuzzle-sdk": "^1.9.3",
+    "random-js": "^1.0.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kuzzleio/kuzzle-benchmark.git"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">= 4.4.5",
+    "npm": ">= 2.14.4"
+  },
+  "license": "Apache-2.0"
+}
