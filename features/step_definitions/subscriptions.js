@@ -3,35 +3,42 @@ module.exports = function () {
   this.When(/^I make subscriptions with a simple "(\w+)" filter$/, {timeout: 10 * 60 * 1000}, function (dslKeyword, callback) {
     var
       subscribed = 0,
-      rooms = [],
+      args = {
+        controller: 'subscribe',
+        action: 'on',
+        index: this.index,
+        collection: this.collection
+      },
       subscribe = () => {
         var i;
 
-        for(i = 0; i < this.packetSize; ++i) {
-          rooms.push(this.subscribeConnections[i % this.subscribeConnections.length]
-            .dataCollectionFactory(this.collection)
-            .subscribe(this.generateSimpleFilter(dslKeyword), () => {}));
+        for(i = 0; i < this.packetSize-1; ++i) {
+          this.subscribeConnections[i % this.subscribeConnections.length]
+            .query(args, this.generateSimpleFilter(dslKeyword));
         }
 
-        waitForSubscriptions();
-      },
-      waitForSubscriptions = () => {
-        var index = rooms.findIndex(kuzzleRoom => kuzzleRoom.roomId === null);
+        subscribed += i;
 
-        if (index > -1) {
-          rooms.splice(0, index);
-          setTimeout(() => waitForSubscriptions(), 200);
-        }
-        else {
-          subscribed += this.packetSize;
-          console.log(`=> Subscribed: ${subscribed}`);
-          if (subscribed < this.subscriptionsCount) {
-            subscribe();
-          }
-          else {
-            callback();
-          }
-        }
+        this.subscribeConnections[i % this.subscribeConnections.length]
+          .query(args, this.generateSimpleFilter(dslKeyword), (error, response) => {
+            if (error) {
+              return callback(error);
+            }
+
+            if (response.status !== 200) {
+              return callback(response.error.message);
+            }
+
+            subscribed++;
+            console.log(`=> Subscribed: ${subscribed}`);
+
+            if (subscribed >= this.subscriptionsCount) {
+              callback();
+            }
+            else {
+              subscribe();
+            }
+          });
       };
 
     subscribe();

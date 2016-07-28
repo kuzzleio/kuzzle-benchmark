@@ -1,7 +1,9 @@
 module.exports = function () {
-  this.When(/^I send real-time messages$/, {timeout: 10 * 60 * 1000}, function (callback) {
+  this.When(/^I send real-time messages$/, {timeout: 60 * 60 * 1000}, function (callback) {
     var
       done = 0;
+
+    this.notifications = 0;
 
     var sendPacket = () => {
       var i;
@@ -29,6 +31,10 @@ module.exports = function () {
           console.log(`=> ${done} messages processed`);
 
           if (done >= this.messagesCount) {
+            if (this.notifications > 0) {
+              console.log('Notifications received: ', this.notifications);
+            }
+
             callback();
           }
           else {

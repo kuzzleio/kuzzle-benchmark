@@ -6,7 +6,6 @@ module.exports = function () {
      The following parameters can be changed to modify benchmark behavior
      */
     this.kuzzleUrl = 'http://localhost:7512';
-
     // Number of messages/documents to send (per scenario)
     this.messagesCount = 100000;
 
@@ -14,7 +13,7 @@ module.exports = function () {
     this.packetSize = 500;
 
     // Number of subscriptions to make for subscriptions stress scenarios
-    this.subscriptionsCount = 1000;
+    this.subscriptionsCount = 10000;
 
     // DSL Keyword list, used with this.generateSimpleFilter()
     this.dslKeywordList = [
