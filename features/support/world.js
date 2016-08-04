@@ -5,7 +5,8 @@ module.exports = function () {
     /*
      The following parameters can be changed to modify benchmark behavior
      */
-    this.kuzzleUrl = 'http://localhost:7512';
+    this.kuzzleUrl = 'localhost';
+
     // Number of messages/documents to send (per scenario)
     this.messagesCount = 100000;
 

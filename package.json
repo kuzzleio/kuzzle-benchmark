@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "cucumber": "^1.2.1",
-    "kuzzle-sdk": "^1.9.3",
+    "kuzzle-sdk": "^2.0.0",
     "random-js": "^1.0.8"
   },
   "repository": {
