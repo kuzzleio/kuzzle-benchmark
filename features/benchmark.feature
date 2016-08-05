@@ -51,3 +51,13 @@ Feature: Kuzzle Benchmark Scenarios
     And 1 subscribe connections
     When I make subscriptions with complex filters
     And I send real-time messages
+
+  Scenario: Sender connections impact
+    Given 5000 sender connections
+    When I send real-time messages
+
+  Scenario: Subscription connections impact
+    Given 1 sender connections
+    And 5000 subscribe connections
+    When I make subscriptions with complex filters
+    And I send real-time messages

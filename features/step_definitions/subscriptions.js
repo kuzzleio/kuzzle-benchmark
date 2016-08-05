@@ -8,6 +8,7 @@ module.exports = function () {
 
   this.When(/^I make subscriptions with complex filters$/, {timeout: 10 * 60 * 1000}, function (callback) {
     this.subscribed = 0;
+    //console.log('Subscriptions: ', this.subscribeConnections.length);
     subscribe(this, callback);
   });
 };
@@ -29,7 +30,7 @@ function subscribe (world, callback, dslKeyword) {
   }
 
   world.subscribed += i;
-
+//console.log(world.subscribed);
   world.subscribeConnections[i % world.subscribeConnections.length]
     .query(args, filterGenerator(dslKeyword), (error, response) => {
       if (error) {
@@ -41,7 +42,7 @@ function subscribe (world, callback, dslKeyword) {
       }
 
       world.subscribed++;
-      world.consoleOutputProgress && console.log(`=> Subscribed: ${subscribed}`);
+      world.consoleOutputProgress && console.log(`=> Subscribed: ${world.subscribed}`);
 
       if (world.subscribed >= world.subscriptionsCount) {
         callback();
