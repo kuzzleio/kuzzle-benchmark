@@ -1,6 +1,6 @@
 module.exports = function () {
 
-  this.When(/^I make subscriptions with a simple "(\w+)" filter$/, {timeout: 10 * 60 * 1000}, function (dslKeyword, callback) {
+  this.When(/^I make subscriptions with a simple "(.+)" filter$/, {timeout: 10 * 60 * 1000}, function (dslKeyword, callback) {
     var
       subscribed = 0,
       args = {
@@ -30,7 +30,7 @@ module.exports = function () {
             }
 
             subscribed++;
-            console.log(`=> Subscribed: ${subscribed}`);
+            this.consoleOutputProgress && console.log(`=> Subscribed: ${subscribed}`);
 
             if (subscribed >= this.subscriptionsCount) {
               callback();

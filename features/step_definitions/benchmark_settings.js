@@ -1,6 +1,9 @@
 module.exports = function () {
-  this.Given(/^an index named "(\w+)" and a collection named "(\w+)"$/, function (index, collection) {
+  this.Given(/^an index named "(\w+)"$/, function (index) {
     this.index = index;
+  });
+
+  this.Given(/^a collection named "(\w+)"$/, function (collection) {
     this.collection = collection;
   });
 
@@ -11,5 +14,9 @@ module.exports = function () {
 
   this.Given(/^an amount of ([0-9]+) subscriptions to perform$/, function (count) {
     this.subscriptionsCount = count;
+  });
+
+  this.Given(/^(no |)progress output on the console$/, function (no) {
+    this.consoleOutputProgress = !(no.length > 0);
   });
 };

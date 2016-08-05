@@ -16,39 +16,8 @@ module.exports = function () {
     // Number of subscriptions to make for subscriptions stress scenarios
     this.subscriptionsCount = 10000;
 
-    // DSL Keyword list, used with this.generateSimpleFilter()
-    this.dslKeywordList = [
-      // Standard terms
-      'exists',
-      'ids',
-      'missing',
-      'range',
-      'regexp',
-      'term',
-      'terms',
-      'geoBoundingBox',
-      'geoDistance',
-      'geoDistanceRange',
-      'geoPolygon',
-      // Special filter
-      'whole collection',
-      // Filter control
-      'and',
-      'bool',
-      'or',
-      // Filter inversion
-      'not exists',
-      'not ids',
-      'not missing',
-      'not range',
-      'not regexp',
-      'not term',
-      'not terms',
-      'not geoBoundingBox',
-      'not geoDistance',
-      'not geoDistanceRange',
-      'not geoPolygon'
-    ];
+    // Regularly outputs the progress of a scenario on the console
+    this.consoleOutputProgress = false;
 
     /*
      Benchmark templates

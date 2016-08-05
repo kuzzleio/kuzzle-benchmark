@@ -1,6 +1,7 @@
 module.exports = function () {
   this.When(/^I send real-time messages$/, {timeout: 60 * 60 * 1000}, function (callback) {
     var
+      start = Date.now(),
       done = 0;
 
     this.notifications = 0;
@@ -19,6 +20,8 @@ module.exports = function () {
       this.senderConnections[done % this.senderConnections.length]
         .dataCollectionFactory(this.collection)
         .publishMessage(this.generateDocument(), (err, response) => {
+          var elapsed;
+
           if (err) {
             return callback(err);
           }
@@ -28,12 +31,16 @@ module.exports = function () {
           }
 
           done++;
-          console.log(`=> ${done} messages processed`);
+
+          this.consoleOutputProgress && console.log(`=> ${done} messages processed`);
 
           if (done >= this.messagesCount) {
             if (this.notifications > 0) {
               console.log('Notifications received: ', this.notifications);
             }
+
+            elapsed = Math.floor((Date.now() - start) / 1000);
+            console.log('Time elapsed: ', elapsed, 'seconds (', Math.floor(this.messagesCount / elapsed), 'messages/s)');
 
             callback();
           }
