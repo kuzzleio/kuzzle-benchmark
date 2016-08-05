@@ -14,7 +14,7 @@ Feature: Kuzzle Benchmark Scenarios
   Scenario Outline: Subscription impact: DSL keywords
     Given 1 sender connections
       And 1 subscribe connections
-    When I make subscriptions with a simple "<keyword>" filter
+    When I make subscriptions with simple "<keyword>" filter
       And I send real-time messages
 
     Examples:
@@ -46,3 +46,8 @@ Feature: Kuzzle Benchmark Scenarios
       | not geoDistanceRange |
       | not geoPolygon       |
 
+  Scenario: Subscription impact: Complex Filters
+    Given 1 sender connections
+    And 1 subscribe connections
+    When I make subscriptions with complex filters
+    And I send real-time messages

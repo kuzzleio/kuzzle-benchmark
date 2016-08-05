@@ -1,46 +1,53 @@
 module.exports = function () {
+  this.subscribed = 0;
 
-  this.When(/^I make subscriptions with a simple "(.+)" filter$/, {timeout: 10 * 60 * 1000}, function (dslKeyword, callback) {
-    var
-      subscribed = 0,
-      args = {
-        controller: 'subscribe',
-        action: 'on',
-        index: this.index,
-        collection: this.collection
-      },
-      subscribe = () => {
-        var i;
+  this.When(/^I make subscriptions with simple "(.+)" filter$/, {timeout: 10 * 60 * 1000}, function (dslKeyword, callback) {
+    this.subscribed = 0;
+    subscribe(this, callback, dslKeyword);
+  });
 
-        for(i = 0; i < this.packetSize-1; ++i) {
-          this.subscribeConnections[i % this.subscribeConnections.length]
-            .query(args, this.generateSimpleFilter(dslKeyword));
-        }
-
-        subscribed += i;
-
-        this.subscribeConnections[i % this.subscribeConnections.length]
-          .query(args, this.generateSimpleFilter(dslKeyword), (error, response) => {
-            if (error) {
-              return callback(error);
-            }
-
-            if (response.status !== 200) {
-              return callback(response.error.message);
-            }
-
-            subscribed++;
-            this.consoleOutputProgress && console.log(`=> Subscribed: ${subscribed}`);
-
-            if (subscribed >= this.subscriptionsCount) {
-              callback();
-            }
-            else {
-              subscribe();
-            }
-          });
-      };
-
-    subscribe();
+  this.When(/^I make subscriptions with complex filters$/, {timeout: 10 * 60 * 1000}, function (callback) {
+    this.subscribed = 0;
+    subscribe(this, callback);
   });
 };
+
+function subscribe (world, callback, dslKeyword) {
+  var
+    args = {
+      controller: 'subscribe',
+      action: 'on',
+      index: world.index,
+      collection: world.collection
+    },
+    i,
+    filterGenerator = dslKeyword ? world.generateSimpleFilter : world.generateComplexFilter;
+
+  for(i = 0; i < world.packetSize-1; ++i) {
+    world.subscribeConnections[i % world.subscribeConnections.length]
+      .query(args, filterGenerator(dslKeyword));
+  }
+
+  world.subscribed += i;
+
+  world.subscribeConnections[i % world.subscribeConnections.length]
+    .query(args, filterGenerator(dslKeyword), (error, response) => {
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.status !== 200) {
+        return callback(response.error.message);
+      }
+
+      world.subscribed++;
+      world.consoleOutputProgress && console.log(`=> Subscribed: ${subscribed}`);
+
+      if (world.subscribed >= world.subscriptionsCount) {
+        callback();
+      }
+      else {
+        subscribe(world, callback, dslKeyword);
+      }
+    });
+}

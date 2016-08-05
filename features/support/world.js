@@ -226,6 +226,70 @@ module.exports = function () {
       }
     };
 
+    this.generateComplexFilter = () => {
+      var
+        fields = ['_id', 'anInteger', 'aFloat', 'aBoolean', 'aString',
+          'aNestedObject.aNestedInteger', 'aNestedObject.aNestedFloat', 'aNestedObject.aNestedBoolean',
+          'aNestedObject.aNestedString'],
+        randomField = fields[this.randomEngine.integer(0, fields.length - 1)];
+
+      return {
+        [this.randomEngine.bool() ? 'or' : 'and']: [
+          {
+            ids: {
+              values: [this.randomEngine.uuid4(), this.randomEngine.uuid4(), this.randomEngine.uuid4()]
+            }
+          },
+          {
+            not: {
+              range: {
+                [this.randomEngine.bool() ? 'aFloat' : 'aNestedObject.aNestedFloat']: {
+                  [this.randomEngine.bool() ? 'gt' : 'gte']: this.randomEngine.integer(500, 1000),
+                  [this.randomEngine.bool() ? 'lt' : 'lte']: this.randomEngine.integer(0, 500)
+                }
+              }
+            }
+          },
+          {
+            regexp: {
+              [randomField]: {
+                value: 'foo\w+',
+                flags: 'i'
+              }
+            }
+          },
+          {
+            terms: {
+              [this.randomEngine.bool() ? 'aString' : 'aNestedObject.aNestedString']: [
+                this.randomEngine.string(100),
+                this.randomEngine.string(100),
+                this.randomEngine.string(100)
+              ]
+            }
+          },
+          {
+            geoPolygon: {
+              geoPoints: {
+                points: [
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)},
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)},
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)},
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)},
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)},
+                  {lat: this.randomEngine.real(-90, 90), lon: this.randomEngine.real(-90, 90)}
+                ]
+              }
+            }
+          },
+          {
+            exists: {
+              field: this.randomEngine.bool() ? randomField : this.randomEngine.string(10)
+            }
+          }
+        ]
+      };
+    };
+
     /*
      Internal benchmark variables
      */
