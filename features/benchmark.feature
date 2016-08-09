@@ -14,15 +14,15 @@ Feature: Kuzzle Benchmark Scenarios
   Scenario Outline: Subscription impact: DSL keywords
     Given 1 sender connections
       And 1 subscribe connections
-    When I make subscriptions with simple "<keyword>" filter
+    When I make subscriptions with simple "<keyword>" filters
       And I send real-time messages
 
     Examples:
       | keyword              |
+      | ids                  |
       | whole collection     |
       | missing              |
       | exists               |
-      | ids                  |
       | range                |
       | regexp               |
       | term                 |
@@ -58,6 +58,6 @@ Feature: Kuzzle Benchmark Scenarios
 
   Scenario: Subscription connections impact
     Given 1 sender connections
-    And 5000 subscribe connections
+    And 1 subscribe connections
     When I make subscriptions with complex filters
     And I send real-time messages
