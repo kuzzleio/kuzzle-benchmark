@@ -23,7 +23,7 @@ function subscribe (world, callback, dslKeyword) {
     i,
     filterGenerator = dslKeyword ? world.generateSimpleFilter : world.generateComplexFilter;
 
-  for(i = 0; i < world.packetSize-1; ++i) {
+  for(i = 0; i < Math.min(world.packetSize, world.subscriptionsCount) - 1; ++i) {
     world.subscribeConnections[i % world.subscribeConnections.length]
       .query(args, {body: filterGenerator(dslKeyword)});
   }

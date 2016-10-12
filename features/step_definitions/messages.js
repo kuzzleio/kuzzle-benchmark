@@ -9,7 +9,7 @@ module.exports = function () {
     var sendPacket = () => {
       var i;
 
-      for (i = 0; i < this.packetSize - 1; i++) {
+      for (i = 0; i < Math.min(this.packetSize, this.messagesCount) - 1; i++) {
         this.senderConnections[(done + i) % this.senderConnections.length]
           .dataCollectionFactory(this.collection)
           .publishMessage(this.generateDocument());

@@ -84,15 +84,15 @@ module.exports = function () {
               }
             }
           };
-        case 'term':
+        case 'equals':
           return {
-            term: {
+            equals: {
               [this.randomEngine.bool() ? 'aString' : 'aNestedObject.aNestedString']: this.randomEngine.string(100)
             }
           };
-        case 'terms':
+        case 'in':
           return {
-            terms: {
+            in: {
               [this.randomEngine.bool() ? 'aString' : 'aNestedObject.aNestedString']: [
                 this.randomEngine.string(100),
                 this.randomEngine.string(100),
@@ -152,16 +152,16 @@ module.exports = function () {
         case 'and':
           return {
             and: [
-              this.generateSimpleFilter('term'),
-              this.generateSimpleFilter('term'),
-              this.generateSimpleFilter('term')
+              this.generateSimpleFilter('equals'),
+              this.generateSimpleFilter('equals'),
+              this.generateSimpleFilter('equals')
             ]
           };
         case 'bool':
           return {
             bool: {
               must: [
-                this.generateSimpleFilter('term')
+                this.generateSimpleFilter('equals')
               ],
               must_not: [
                 this.generateSimpleFilter('missing')
@@ -174,9 +174,9 @@ module.exports = function () {
         case 'or':
           return {
             or: [
-              this.generateSimpleFilter('term'),
-              this.generateSimpleFilter('term'),
-              this.generateSimpleFilter('term')
+              this.generateSimpleFilter('equals'),
+              this.generateSimpleFilter('equals'),
+              this.generateSimpleFilter('equals')
             ]
           };
         case 'not exists':
@@ -199,13 +199,13 @@ module.exports = function () {
           return {
             not: this.generateSimpleFilter('regexp')
           };
-        case 'not term':
+        case 'not equals':
           return {
-            not: this.generateSimpleFilter('term')
+            not: this.generateSimpleFilter('equals')
           };
-        case 'not terms':
+        case 'not in':
           return {
-            not: this.generateSimpleFilter('terms')
+            not: this.generateSimpleFilter('in')
           };
         case 'not geoBoundingBox':
           return {
@@ -259,7 +259,7 @@ module.exports = function () {
             }
           },
           {
-            terms: {
+            in: {
               [this.randomEngine.bool() ? 'aString' : 'aNestedObject.aNestedString']: [
                 this.randomEngine.string(100),
                 this.randomEngine.string(100),
