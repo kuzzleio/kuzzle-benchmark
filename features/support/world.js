@@ -5,7 +5,13 @@ module.exports = function () {
     /*
      The following parameters can be changed to modify benchmark behavior
      */
-    this.kuzzleUrl = 'localhost';
+    this.kuzzleUrl = 'kuzzle';
+
+    // Via Proxy:
+    //this.kuzzleHttpUrl = 'http://kuzzle:7511/api/1.0/';
+
+    // Direct:
+    this.kuzzleHttpUrl = 'http://kuzzle:7510/api/1.0/';
 
     // Number of messages/documents to send (per scenario)
     this.messagesCount = 100000;

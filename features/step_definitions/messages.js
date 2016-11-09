@@ -27,7 +27,7 @@ module.exports = function () {
           }
 
           if (response.status !== 200) {
-            return callback(response.error.message);
+            return callback(response);
           }
 
           done++;

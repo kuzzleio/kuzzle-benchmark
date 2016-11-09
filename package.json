@@ -14,7 +14,8 @@
   "dependencies": {
     "cucumber": "^1.2.1",
     "kuzzle-sdk": "^2.0.0",
-    "random-js": "^1.0.8"
+    "random-js": "^1.0.8",
+    "request": "^2.74.0"
   },
   "repository": {
     "type": "git",
