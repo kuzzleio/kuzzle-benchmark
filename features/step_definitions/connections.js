@@ -1,5 +1,8 @@
-var
-  Kuzzle = require('kuzzle-sdk');
+'use strict';
+
+const
+  Kuzzle = require('kuzzle-sdk'),
+  logUpdate = require('log-update');
 
 module.exports = function () {
   this.Given(/^an index named "(\w+)" and a collection named "(\w+)"$/, function (index, collection) {
@@ -7,14 +10,27 @@ module.exports = function () {
     this.collection = collection;
   });
 
-  this.Given(/^(\d+) sender connections$/, function (connections, callback) {
-    var i;
+  this.Given(/^(\d+) sender connections$/, {timeout: 60 * 60 * 1000}, function (connections, callback) {
+    var
+      cnx = Number.parseInt(connections),
+      count = 0,
+      connect = () => {
+        new Kuzzle(this.kuzzleUrl, {defaultIndex: this.index}, (err, k) => {
+          this.senderConnections.push(k);
+          count++;
+          logUpdate('Connecting clients: ' + count + '/' + cnx);
 
-    for (i = 0; i < connections; ++i) {
-      this.senderConnections.push(new Kuzzle(this.kuzzleUrl, {defaultIndex: this.index}));
-    }
+          if (count === cnx) {
+            logUpdate.done();
+            callback();
+          }
+          else {
+            connect();
+          }
+        });
+      };
 
-    callback();
+    connect();
   });
 
   this.Given(/^(\d+) http connections$/, function (connections, callback) {

@@ -5,13 +5,10 @@ module.exports = function () {
     /*
      The following parameters can be changed to modify benchmark behavior
      */
-    this.kuzzleUrl = 'kuzzle';
+    this.kuzzleUrl = 'localhost';
 
     // Via Proxy:
-    //this.kuzzleHttpUrl = 'http://kuzzle:7511/api/1.0/';
-
-    // Direct:
-    this.kuzzleHttpUrl = 'http://kuzzle:7510/api/1.0/';
+    this.kuzzleHttpUrl = 'http://localhost:7511';
 
     // Number of messages/documents to send (per scenario)
     this.messagesCount = 100000;
@@ -19,11 +16,12 @@ module.exports = function () {
     // Number of messages to send to kuzzle in a single packet
     this.packetSize = 500;
 
+    // Pre-buffered documents
+    this.maxBufferedDocuments = 100000;
+    this.documents = [];
+
     // Number of subscriptions to make for subscriptions stress scenarios
     this.subscriptionsCount = 10000;
-
-    // Regularly outputs the progress of a scenario on the console
-    this.consoleOutputProgress = false;
 
     /*
      Benchmark templates

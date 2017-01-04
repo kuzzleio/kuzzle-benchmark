@@ -7,8 +7,6 @@ module.exports = function () {
     this.senderConnections = [];
     this.subscribeConnections = [];
 
-    setTimeout(() => {
-      callback();
-    }, 5000);
+    callback();
   });
 };
