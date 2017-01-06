@@ -1,0 +1,50 @@
+{
+    // -------------------------------------------------------------------------
+    // Kuzzle Benchmark configuration sample file
+    //
+    // You can copy this file to a valid [rc](https://github.com/dominictarr/rc)
+    // file location to customize Kuzzle configuration
+    // -------------------------------------------------------------------------
+
+  "benchmark": {
+    // If true, writes nothing on the standard output
+    "silent": false,
+
+    // Number of clients to connect to Kuzzle
+    "clients": 1000,
+
+    // Directory where the results are stored
+    "resultDirectory": "benchmarkResults"
+  },
+
+  "kuzzle": {
+    // Kuzzle host name to benchmark
+    "host": "localhost",
+
+    // Kuzzle HTTP API URL
+    "url": "http://localhost:7511",
+
+    // Kuzzle index used to temporary store persistent documents
+    "index": "benchmark",
+
+    // collection name used to temporary store persistent documents
+    "collection": "scenarios"
+  },
+
+  "documents": {
+    // Number of documents to send (per scenario)
+    "count": 100000,
+
+    // Number of documents to send to kuzzle in a single packet
+    "packetSize": 500,
+
+    // Documents buffer size
+    // If less than documents.count, will cycle the buffer and re-send
+    // the same documents to Kuzzle
+    "bufferSize": 100000
+  },
+
+  "subscriptions": {
+    "count": 10000
+  }
+}
