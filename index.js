@@ -20,4 +20,3 @@ const buffer = new BenchmarkBuffer(config, err => {
   });
 });
 
-

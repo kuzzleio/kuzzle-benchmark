@@ -12,19 +12,23 @@
     "features": "features"
   },
   "dependencies": {
-    "async": "^2.1.4",
-    "kuzzle-sdk": "^2.3.3",
-    "log-update": "^1.0.2",
-    "moment": "^2.17.1",
+    "async": "^2.6.1",
+    "bufferutil": "^3.0.5",
+    "kuzzle-sdk": "^5.0.11",
+    "log-update": "^2.3.0",
+    "moment": "^2.22.1",
     "random-js": "^1.0.8",
-    "rc": "^1.1.6",
-    "request": "^2.74.0"
+    "rc": "^1.2.8",
+    "request": "^2.87.0",
+    "utf-8-validate": "^4.0.2"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/kuzzleio/kuzzle-benchmark.git"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  },
   "engines": {
     "node": ">= 4.4.5",
     "npm": ">= 2.14.4"
