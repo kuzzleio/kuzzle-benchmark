@@ -11,18 +11,18 @@
 module.exports = {
   benchmark: {
     silent: false,
-    clients: 10000,
+    clients: 1000,
     resultDirectory: 'benchmarkResults'
   },
   kuzzle: {
     host: 'localhost',
-    url: 'http://localhost:7512',
+    port: 7512,
     index: 'benchmark',
     collection: 'scenarios'
   },
   documents: {
     count: 1000000,
-    packetSize: 500,
+    packetSize: 10000,
     bufferSize: 100000
   },
   subscriptions: {
