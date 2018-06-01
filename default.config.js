@@ -21,7 +21,7 @@ module.exports = {
     collection: 'scenarios'
   },
   documents: {
-    count: 100000,
+    count: 1000000,
     bufferSize: 100000
   },
   subscriptions: {
