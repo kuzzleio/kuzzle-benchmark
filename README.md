@@ -16,7 +16,7 @@ $ npm start
 Due to the benchmarker high frequency nature, it has a tendency to trigger Linux Kernels anti-flood protections.
 To bypass this problem, you need to set the `net.core.somaxconn` parameter to a higher value.
 
-For instance: `sudo sysctl -w net.core.somaxconn=2048`
+For instance: `sudo sysctl -w net.core.somaxconn=8192`
 
 ## Modifying benchmark scenarios
 
