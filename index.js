@@ -1,7 +1,7 @@
 'use strict';
 
 const
-  config = require('rc')('benchmark', require('./default.config')),
+  config = require('rc')('benchmark', require('./benchmark.config')),
   BenchmarkBuffer = require('./lib/core/buffer'),
   Steps = require('./lib/steps');
 

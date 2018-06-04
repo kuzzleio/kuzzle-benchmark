@@ -12,7 +12,14 @@ module.exports = {
   benchmark: {
     silent: false,
     clients: 1000,
-    resultDirectory: 'benchmarkResults'
+    resultDirectory: 'benchmarkResults',
+    scenarios: [
+      'realtimeControl',
+      'realtimeGeofencingLocalized',
+      'realtimeGeofencingLarge',
+      'documentWrite',
+      'documentWriteSubscribed'
+    ]
   },
   kuzzle: {
     host: 'localhost',
@@ -21,7 +28,7 @@ module.exports = {
     collection: 'scenarios'
   },
   documents: {
-    count: 1000000,
+    count: 100000,
     bufferSize: 100000
   },
   subscriptions: {
