@@ -12,7 +12,7 @@ module.exports = {
   benchmark: {
     silent: false,
     clients: 1000,
-    resultDirectory: 'benchmarkResults',
+    resultDirectory: 'results',
     scenarios: [
       'realtimeControl',
       'realtimeGeofencingLocalized',
@@ -28,7 +28,7 @@ module.exports = {
     collection: 'scenarios'
   },
   documents: {
-    count: 100000,
+    count: 1000000,
     bufferSize: 100000
   },
   subscriptions: {
