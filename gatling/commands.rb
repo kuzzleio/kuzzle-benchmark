@@ -1,5 +1,4 @@
 require 'optparse'
-require "byebug"
 require 'net/http'
 require 'json'
 
