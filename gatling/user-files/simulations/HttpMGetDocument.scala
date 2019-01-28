@@ -26,7 +26,6 @@ class HttpMGetDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
-  var ids = """ { "ids": ["", ""] } """
   val document = """
           {
         "driver": {
@@ -51,6 +50,9 @@ class HttpMGetDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
+  val input_file = "./user-files/simulations/documents.json"
+  val documents = scala.io.Source.fromFile(input_file).mkString
+
   //val input_file = "./user-files/simulations/test.json"
   //val json_content = scala.io.Source.fromFile(input_file).mkString
   //println(json_content)
@@ -60,10 +62,10 @@ class HttpMGetDocument extends Simulation {
   val scn = scenario("Http mget document")
     .repeat(requests, "i") {
       exec(http("document:create")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_create")
+        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mCreate")
         .header("Bearer", jwt)
-        .body(StringBody(document)).asJson
-        .check(jsonPath("$.result._id").find.saveAs("id"))
+        .body(StringBody(documents)).asJson
+        .check(jsonPath("$.result.hits[*]._id").findAll.saveAs("id"))
         .check(status.is(200))
       ).exec {
           session =>
@@ -72,7 +74,7 @@ class HttpMGetDocument extends Simulation {
       }.exec(http("document:mget")
         .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mGet")
         .header("Bearer", jwt)
-        .body(StringBody(""" { "ids": ["$id", "$id", "$id", "$id", "$id", "$id", "$id", "$id", "$id"] }""")).asJson      
+        .body(StringBody(""" { "ids": ["$id"] }""")).asJson      
         .check(status.is(200))
       )
     }
