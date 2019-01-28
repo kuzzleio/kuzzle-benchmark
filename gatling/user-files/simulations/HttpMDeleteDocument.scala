@@ -20,7 +20,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class HttpMGetDocument extends Simulation {
+class HttpMDeleteDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
@@ -36,13 +36,7 @@ class HttpMGetDocument extends Simulation {
   val input_file = "./user-files/simulations/documents.json"
   val documents = scala.io.Source.fromFile(input_file).mkString
 
-  //val input_file = "./user-files/simulations/test.json"
-  //val json_content = scala.io.Source.fromFile(input_file).mkString
-  //println(json_content)
-
-  //val jsonFileFeeder = jsonFile("./user-files/simulations/test.json")
-
-  val scn = scenario("Http mget document")
+  val scn = scenario("Http mdelete document")
     .repeat(requests, "i") {
       exec(http("document:create")
         .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mCreate")
@@ -54,10 +48,10 @@ class HttpMGetDocument extends Simulation {
           session =>
             println(session("id").as[String])
             session
-      }.exec(http("document:mget")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mGet")
+      }.exec(http("document:mdelete")
+        .delete("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mDelete")
         .header("Bearer", jwt)
-        .body(StringBody(""" { "ids": ["$id"] }""")).asJson      
+        .body(StringBody(""" { "ids": ["${id}"] }""")).asJson      
         .check(status.is(200))
       )
     }
