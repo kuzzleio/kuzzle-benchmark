@@ -19,6 +19,7 @@ package computerdatabase
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
+import sys.process._
 
 class HttpUpdateDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
@@ -26,31 +27,18 @@ class HttpUpdateDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
+  
   val document = """
-    {
-      "driver": {
-        "name": "Elton John Doe",
-        "age": 42,
-        "license": "B"
-      },
-
-      "car": {
-        "position": {
-          "lat": 42.83734827,
-          "lng": 8.298382039
-        },
-        "type": "berline"
+      {
+        "user": "yo" 
       }
-    }
   """
 
- val documentb = """
-    {
-      "driver": {
-        "name": "jc"
-      }
-    }
-  """
+  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val exitCode = result.!
+  val input_file = "./id.txt"
+  val id = scala.io.Source.fromFile(input_file).mkString
+  println(id)
 
   var test = ""
   val httpProtocol = http
@@ -61,21 +49,10 @@ class HttpUpdateDocument extends Simulation {
 
   val scn = scenario("Http update document")
     .repeat(requests, "i") {
-    exec(http("document:create")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_create")
+    exec(http("document:update")
+        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/" + id + "/_update")
         .header("Bearer", jwt)
         .body(StringBody(document)).asJson
-        .check(jsonPath("$.result._id").find.saveAs("id"))
-        .check(status.is(200))
-      ).exec(
-          session => {
-            test = session("id").as[String]
-            println("ID =======> " + test) 
-            session
-      }).exec(http("document:update")
-        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/${id}/_update")
-        .header("Bearer", jwt)
-        .body(StringBody(documentb)).asJson
         .check(status.is(200))
       )
     }
