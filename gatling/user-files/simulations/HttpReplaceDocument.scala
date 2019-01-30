@@ -61,7 +61,7 @@ class HttpReplaceDocument extends Simulation {
   val scn = scenario("Http replace document")
     .repeat(requests, "i") {
     exec(http("document:replace")
-        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+ id +"/_replace")
+        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+ id.dropRight(1) +"/_replace")
         .header("Bearer", jwt)
         .body(StringBody(document)).asJson
         .check(status.is(200))
