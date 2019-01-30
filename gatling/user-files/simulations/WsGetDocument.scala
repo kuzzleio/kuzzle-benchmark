@@ -19,22 +19,29 @@ package computerdatabase
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
+import sys.process._
 
 class WsGetDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var documentId = System.getProperty("documentId", "some jwt")
+  
+  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val exitCode = result.!
+  val input_file = "./id.txt"
+  val id = scala.io.Source.fromFile(input_file).mkString
 
-  val query = """
-    {
-      "controller": "document",
-      "action": "get",
+  val query = """{
       "index": "nyc-open-data",
       "collection": "yellow-taxi",
-      "_id": """ + '"' + documentId + "\" }"
+      "controller": "document",
+      "action": "get",
+      "_id": """ + '"' + id.dropRight(1) + '"' + """
+}"""
 
+  println(query)
+  print(id)
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -46,7 +53,7 @@ class WsGetDocument extends Simulation {
     .exec(ws("Connect client").connect("/"))
     .pause(1)
     .exec(ws("Login")
-      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "aschen", "password": "aschen" } }""")
+      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "yo", "password": "wwkxgrd" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
       )
@@ -55,7 +62,7 @@ class WsGetDocument extends Simulation {
       exec(ws("document:get")
         .sendText(query)
         .await(1 seconds)(
-          ws.checkTextMessage("document created").check(regex(".*200.*"))
+          ws.checkTextMessage("got document").check(regex(".*200.*"))
         )
       )
     }

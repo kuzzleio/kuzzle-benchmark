@@ -27,6 +27,7 @@ class HttpReplaceDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
+  
 
   val document = """
       {

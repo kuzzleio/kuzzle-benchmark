@@ -19,6 +19,7 @@ package computerdatabase
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
+import sys.process._
 
 class HttpGetDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
@@ -26,8 +27,12 @@ class HttpGetDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
-  var documentId = System.getProperty("documentId", "some jwt")
 
+  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val exitCode = result.!
+  val input_file = "./id.txt"
+  val id = scala.io.Source.fromFile(input_file).mkString
+  
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -37,7 +42,7 @@ class HttpGetDocument extends Simulation {
   val scn = scenario("Http get document")
     .repeat(requests, "i") {
       exec(http("document:get")
-        .get("http://" + host + ":7512/nyc-open-data/yellow-taxi/" + documentId)
+        .get("http://" + host + ":7512/nyc-open-data/yellow-taxi/" + id.dropRight(1))
         .header("Bearer", jwt)
         .check(status.is(200))
       )
