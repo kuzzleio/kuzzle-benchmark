@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#docker build -t foo ./user-files/DockerFile/
 docker run -it --rm \
   -v "$(pwd)/user-files/:/opt/gatling/user-files" \
   -v "$(pwd)/results/:/opt/gatling/results" \
