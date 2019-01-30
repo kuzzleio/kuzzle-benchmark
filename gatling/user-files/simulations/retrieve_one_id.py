@@ -18,5 +18,5 @@ with open('id.json') as f:
 print([data["result"]["_id"] for data in data], file=open("id.txt", "w"))
 content = codecs.open('id.txt', encoding='utf-8').read()
 content = content[:-1]
-print(content.replace('\'', '\"').replace(']', '').replace('[','').replace('"', '').replace('\n', ''), file=open("id.txt", "w"))
+print(content.replace('\'', '').replace(']', '').replace('[','').replace('\n', ''), file=open("id.txt", "w"))
 os.remove("id.json")

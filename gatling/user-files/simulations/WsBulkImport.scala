@@ -20,37 +20,39 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class WsWriteDocument extends Simulation {
+class WsBulkImportDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val document = """
-    {
-      "driver": {
-        "name": "John Doe",
-        "age": 42,
-        "license": "B"
-      },
-
-      "car": {
-        "position": {
-          "lat": 42.83734827,
-          "lng": 8.298382039
-        },
-        "type": "berline"
-      }
+   val bulkData = """ 
+   {
+	"bulkData": [{
+    "index": {
+      "_index": "nyc-open-data",
+      "_type": "yellow-taxi"
     }
+  },
+  {
+    "name": "FCA-Ardepharm",
+    "radius": 25,
+    "location": {
+      "lat": 45.045626,
+      "lon": 4.846281
+    }
+  }]
+}
   """
 
   val query = """
     {
-      "controller": "document",
-      "action": "create",
       "index": "nyc-open-data",
       "collection": "yellow-taxi",
-      "body": """ + document + """
+      "controller": "bulk",
+      "action": "import",
+      
+      "body": """ + bulkData + """
     }
   """
 
@@ -61,7 +63,7 @@ class WsWriteDocument extends Simulation {
     .userAgentHeader("Gatling2")
     .wsBaseUrl("ws://" + host + ":7512")
 
-  val scn = scenario("WebSocket write document")
+  val scn = scenario("WebSocket bulk import")
     .exec(ws("Connect client").connect("/"))
     .pause(1)
     .exec(ws("Login")
@@ -71,10 +73,10 @@ class WsWriteDocument extends Simulation {
       )
     )
     .repeat(requests, "i") {
-      exec(ws("document:create")
+      exec(ws("document:bulk")
         .sendText(query)
         .await(1 seconds)(
-          ws.checkTextMessage("document created").check(regex(".*200.*"))
+          ws.checkTextMessage("import ok").check(regex(".*200.*"))
         )
       )
     }
