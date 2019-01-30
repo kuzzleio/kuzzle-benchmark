@@ -19,33 +19,55 @@ package computerdatabase
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
+import sys.process._
 
-class HttpMCreateDocument extends Simulation {
+class HttpDeleteDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
+  val document = """
+    {
+      "driver": {
+        "name": "John Doe",
+        "age": 42,
+        "license": "B"
+      },
 
-  val input_file = "./user-files/simulations/documents.json"
-  val documents = scala.io.Source.fromFile(input_file).mkString
-  
+      "car": {
+        "position": {
+          "lat": 42.83734827,
+          "lng": 8.298382039
+        },
+        "type": "berline"
+      }
+    }
+  """
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http mcreate document")
+  val scn = scenario("Http delete document")
     .repeat(requests, "i") {
-      exec(http("document:mCreate")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mCreate")
+      exec(http("document:create")
+        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_create")
         .header("Bearer", jwt)
-        .body(StringBody(documents)).asJson
+        .body(StringBody(document)).asJson
+        .check(jsonPath("$.result._id").find.saveAs("id"))
+        .check(status.is(200))
+      ).exec {
+          session =>
+            println(session("id").as[String])
+            session
+      }.exec(http("document:delete")
+        .delete("http://" + host + ":7512/nyc-open-data/yellow-taxi/${id}")
+        .header("Bearer", jwt)
         .check(status.is(200))
       )
     }
-
   setUp(scn.inject(
     rampUsers(users) during (duration seconds)
   ).protocols(httpProtocol))

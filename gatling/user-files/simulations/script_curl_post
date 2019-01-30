@@ -1,12 +1,12 @@
 #!/bin/bash
-echo [ >> test.json && for ((i = 1; i <= $1; i++)); do  \
+rm -f ids.json && echo [ >> ids.json && for ((i = 1; i <= $1; i++)); do  \
   curl --header "Content-Type: application/json" \
   --request POST \
   --data '{"user":"yo","pwd":"kk"}' \
-  http://localhost:7512/nyc-open-data/yellow-taxi/_create >> test.json && \
+  http://localhost:7512/nyc-open-data/yellow-taxi/_create >> ids.json && \
       if [ $i != $1 ];
 	 then
-	     echo , >> test.json;
+	     echo , >> ids.json;
 	     fi;
        done
-      echo ] >> test.json\
+      echo ] >> ids.json && python3 retrieve_id.py
