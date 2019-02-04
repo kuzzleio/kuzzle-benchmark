@@ -36,7 +36,7 @@ class WsMCreateDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
 
-  val input_file = "./user-files/simulations/documents.json"
+  val input_file = "./user-files/utils/documents.json"
   val docs = scala.io.Source.fromFile(input_file).mkString
 
   val query = """

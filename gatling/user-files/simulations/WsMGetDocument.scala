@@ -36,8 +36,8 @@ class WsMGetDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
 
-  println("Creating files for test...")
-  val result = Process("""node ./user-files/simulations/requestMIds 2000""")
+  println("Creating files for test. This may take a minute.")
+  val result = Process("""node ./user-files/utils/requestMIds 2000""")
   val exitCode = result.!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString

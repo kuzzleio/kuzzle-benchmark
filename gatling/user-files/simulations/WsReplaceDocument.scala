@@ -28,7 +28,7 @@ class WsReplaceDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val result = Process("""node ./user-files/simulations/requestOneId""")
+  val result = Process("""node ./user-files/utils/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString

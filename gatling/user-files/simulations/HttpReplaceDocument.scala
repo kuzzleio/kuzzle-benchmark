@@ -47,7 +47,7 @@ class HttpReplaceDocument extends Simulation {
       }
     """
 
-  val result = Process("""node ./user-files/simulations/requestOneId""")
+  val result = Process("""node ./user-files/utils/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString

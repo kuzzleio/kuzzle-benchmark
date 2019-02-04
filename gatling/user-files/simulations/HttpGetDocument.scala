@@ -28,7 +28,7 @@ class HttpGetDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
 
-  val result = Process("""node ./user-files/simulations/requestOneId""")
+  val result = Process("""node ./user-files/utils/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
