@@ -21,14 +21,6 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import sys.process._
 
-import java.io._
-import java.net._
-import scala.util.Try
-import scala.util.parsing.json._
-import scala.util.{Failure, Success}
-import scala.util.parsing.json.JSON
-
-
 class WsMGetDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
   val requests = System.getProperty("requests", "2000").toInt
