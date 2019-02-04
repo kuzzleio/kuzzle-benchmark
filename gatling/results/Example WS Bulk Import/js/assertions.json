@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.WsBulkImportDocument",
+  "simulationId": "wsbulkimportdocument",
+  "start": 1549284982526,
+  "description": "",
+  "scenarios": ["WebSocket bulk import"],
+  "assertions": [
+
+  ]
+}

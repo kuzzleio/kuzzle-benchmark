@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.WsUpdateDocument",
+  "simulationId": "wsupdatedocument",
+  "start": 1549285957453,
+  "description": "",
+  "scenarios": ["WebSocket update document"],
+  "assertions": [
+
+  ]
+}

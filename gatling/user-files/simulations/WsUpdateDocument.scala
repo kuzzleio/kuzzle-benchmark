@@ -28,11 +28,11 @@ class WsUpdateDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val result = Process("""node ./user-files/simulations/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
-  print(id)
+
   val document = """
       {
         "user": "jc" 
@@ -45,14 +45,11 @@ class WsUpdateDocument extends Simulation {
       "collection": "yellow-taxi",
       "controller": "document",
       "action": "update",
-      "_id" : """ + '"' + id.dropRight(1) + '"' +  """,
+      "_id" : """ + '"' + id + '"' +  """,
       "body": """ + document + """
     }
   """
-
-println(""" "_id" : " """ + id.dropRight(1) +  """ ",
-      "body": """ + document + """ """)
-
+  
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")

@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.WsMCreateDocument",
+  "simulationId": "wsmcreatedocument",
+  "start": 1549285249396,
+  "description": "",
+  "scenarios": ["WebSocket mCreate document"],
+  "assertions": [
+
+  ]
+}

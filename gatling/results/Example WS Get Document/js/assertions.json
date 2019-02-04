@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.WsGetDocument",
+  "simulationId": "wsgetdocument",
+  "start": 1549285166550,
+  "description": "",
+  "scenarios": ["WebSocket get document"],
+  "assertions": [
+
+  ]
+}

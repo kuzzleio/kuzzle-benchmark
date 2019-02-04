@@ -28,11 +28,11 @@ class WsReplaceDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val result = Process("""node ./user-files/simulations/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
-  print(id)
+
   val document = """
     {
       "driver": {
@@ -57,7 +57,7 @@ class WsReplaceDocument extends Simulation {
       "collection": "yellow-taxi",
       "controller": "document",
       "action": "replace",
-      "_id" : """ + '"' + id.dropRight(1) + '"' +  """,
+      "_id" : """ + '"' + id + '"' +  """,
       "body": """ + document + """
     }
   """

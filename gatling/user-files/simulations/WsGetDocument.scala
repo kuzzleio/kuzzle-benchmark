@@ -27,7 +27,7 @@ class WsGetDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   
-  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val result = Process("""node ./user-files/simulations/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
@@ -37,11 +37,9 @@ class WsGetDocument extends Simulation {
       "collection": "yellow-taxi",
       "controller": "document",
       "action": "get",
-      "_id": """ + '"' + id.dropRight(1) + '"' + """
+      "_id": """ + '"' + id + '"' + """
 }"""
 
-  println(query)
-  print(id)
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")

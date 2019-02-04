@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.HttpCreateOrReplaceDocument",
+  "simulationId": "httpcreateorreplacedocument",
+  "start": 1549284042115,
+  "description": "",
+  "scenarios": ["Http create or replace document"],
+  "assertions": [
+
+  ]
+}

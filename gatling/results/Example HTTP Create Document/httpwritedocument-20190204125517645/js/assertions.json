@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.HttpWriteDocument",
+  "simulationId": "httpwritedocument",
+  "start": 1549284917645,
+  "description": "",
+  "scenarios": ["Http write document"],
+  "assertions": [
+
+  ]
+}

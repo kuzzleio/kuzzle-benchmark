@@ -34,13 +34,10 @@ class HttpUpdateDocument extends Simulation {
       }
   """
 
-  val result = Process("""python3 ./user-files/simulations/retrieve_one_id.py""")
+  val result = Process("""node ./user-files/simulations/requestOneId""")
   val exitCode = result.!
   val input_file = "./id.txt"
   var id = scala.io.Source.fromFile(input_file).mkString
-  print(id)
-  print("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+id.dropRight(1)+"/_update")
-  var test = ""
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -50,7 +47,7 @@ class HttpUpdateDocument extends Simulation {
   val scn = scenario("Http update document")
     .repeat(requests, "i") {
     exec(http("document:update")
-        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+id.dropRight(1)+"/_update")
+        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+ id +"/_update")
         .header("Bearer", jwt)
         .body(StringBody(document)).asJson
         .check(status.is(200))

@@ -1,0 +1,10 @@
+{
+  "simulation": "computerdatabase.HttpGetDocument",
+  "simulationId": "httpgetdocument",
+  "start": 1549284220535,
+  "description": "",
+  "scenarios": ["Http get document"],
+  "assertions": [
+
+  ]
+}
