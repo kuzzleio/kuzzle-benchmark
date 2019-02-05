@@ -19,11 +19,11 @@ class WsGetDocument extends Simulation {
 
 
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
-    .wsBaseUrl("ws://" + host + ":7512")
+    .wsBaseUrl(s"ws://${host}:7512")
 
   val scn = scenario("WebSocket get document")
     .exec(ws("Connect client").connect("/"))

@@ -42,7 +42,7 @@ class HttpMCreateOrReplaceDocument extends Simulation {
   docs += """]}"""
 
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -50,7 +50,7 @@ class HttpMCreateOrReplaceDocument extends Simulation {
   val scn = scenario("Http mcreate or replace document")
     .repeat(requests, "i") {
       exec(http("document:mCreateOrReplace")
-        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mCreateOrReplace")
+        .put(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mCreateOrReplace")
         .header("Bearer", jwt)
         .body(StringBody(docs.mkString)).asJson
         .check(status.is(200))

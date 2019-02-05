@@ -30,7 +30,7 @@ class HttpWriteDocument extends Simulation {
   """
 
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -38,7 +38,7 @@ class HttpWriteDocument extends Simulation {
   val scn = scenario("Http write document")
     .repeat(requests, "i") {
       exec(http("document:create")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_create")
+        .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_create")
         .header("Bearer", jwt)
         .body(StringBody(document)).asJson
         .check(status.is(200))

@@ -32,7 +32,7 @@ class HttpBulkImport extends Simulation {
       """
 
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")

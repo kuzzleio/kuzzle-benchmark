@@ -37,7 +37,7 @@ class HttpReplaceDocument extends Simulation {
   val id = scala.io.Source.fromFile(input_file).mkString
 
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -45,7 +45,7 @@ class HttpReplaceDocument extends Simulation {
   val scn = scenario("Http replace document")
     .repeat(requests, "i") {
     exec(http("document:replace")
-        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/"+ id +"/_replace")
+        .put(s"http://${host}:7512/nyc-open-data/yellow-taxi/${id}/_replace")
         .header("Bearer", jwt)
         .body(StringBody(document)).asJson
         .check(status.is(200))

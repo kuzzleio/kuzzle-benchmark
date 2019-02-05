@@ -18,7 +18,7 @@ class HttpMGetDocument extends Simulation {
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -26,7 +26,7 @@ class HttpMGetDocument extends Simulation {
   val scn = scenario("Http mget document")
     .repeat(requests, "i") {
       exec(http("document:mget")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mGet")
+        .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mGet")
         .header("Bearer", jwt)
         .body(StringBody(""" { "ids": """ + ids + """ }""")).asJson      
         .check(status.is(200))

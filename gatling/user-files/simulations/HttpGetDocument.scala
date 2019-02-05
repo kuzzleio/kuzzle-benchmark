@@ -18,7 +18,7 @@ class HttpGetDocument extends Simulation {
   val id = scala.io.Source.fromFile(input_file).mkString
   
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -26,7 +26,7 @@ class HttpGetDocument extends Simulation {
   val scn = scenario("Http get document")
     .repeat(requests, "i") {
       exec(http("document:get")
-        .get("http://" + host + ":7512/nyc-open-data/yellow-taxi/" + id)
+        .get(s"http://${host}:7512/nyc-open-data/yellow-taxi/${id}")
         .header("Bearer", jwt)
         .check(status.is(200))
       )

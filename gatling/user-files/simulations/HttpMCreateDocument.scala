@@ -41,7 +41,7 @@ class HttpMCreateDocument extends Simulation {
   docs += """]}"""
   
   val httpProtocol = http
-    .baseUrl("http://" + host + ":7512")
+    .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
@@ -49,7 +49,7 @@ class HttpMCreateDocument extends Simulation {
   val scn = scenario("Http mcreate document")
     .repeat(requests, "i") {
       exec(http("document:mCreate")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_mCreate")
+        .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mCreate")
         .header("Bearer", jwt)
         .body(StringBody(docs.mkString)).asJson
         .check(status.is(200))
