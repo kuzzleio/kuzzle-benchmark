@@ -1,19 +1,3 @@
-/*
- * Copyright 2011-2018 GatlingCorp (https://gatling.io)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package computerdatabase
 
 import io.gatling.core.Predef._
@@ -29,23 +13,12 @@ class WsMGetDocument extends Simulation {
   var jwt = System.getProperty("jwt", "some jwt")
 
   println("Creating files for test. This may take a minute.")
-  val result = Process("""node ./user-files/utils/requestMIds 2000""")
+  val result = Process("node ./user-files/utils/requestMIds 2000")
   val exitCode = result.!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
 
-  val query = """
-      {
-        "index": "nyc-open-data",
-        "collection": "yellow-taxi",
-        "controller": "document",
-        "action": "mGet",
-        "body": {
-        "ids": """ + ids + """
-         },
-        "includeTrash": false
-      }
-      """
+
   val httpProtocol = http
       .baseUrl("http://" + host + ":7512")
       .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -59,11 +32,29 @@ class WsMGetDocument extends Simulation {
       .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "yo", "password": "wwkxgrd" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
+        check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    )
-    .repeat(requests, "i") {
+    ).exec {
+          session =>
+          println(session("token").as[String])
+          session
+    }.repeat(requests, "i") {
       exec(ws("document:mget")
-        .sendText(query)
+        .sendText(
+          """
+          {
+            "index": "nyc-open-data",
+            "collection": "yellow-taxi",
+            "controller": "document",
+            "action": "mGet",
+            "jwt": "${token}",
+            "body": {
+            "ids": """ + ids + """
+            },
+            "includeTrash": false
+          }
+          """
+        )
         .await(1 seconds)(
           ws.checkTextMessage("document getted").check(regex(".*200.*"))
         )

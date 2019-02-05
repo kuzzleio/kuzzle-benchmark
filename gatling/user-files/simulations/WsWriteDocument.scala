@@ -1,19 +1,3 @@
-/*
- * Copyright 2011-2018 GatlingCorp (https://gatling.io)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package computerdatabase
 
 import io.gatling.core.Predef._
@@ -43,17 +27,6 @@ class WsWriteDocument extends Simulation {
       }
     }
   """
-
-  val query = """
-    {
-      "controller": "document",
-      "action": "create",
-      "index": "nyc-open-data",
-      "collection": "yellow-taxi",
-      "body": """ + document + """
-    }
-  """
-
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -68,18 +41,30 @@ class WsWriteDocument extends Simulation {
       .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "yo", "password": "wwkxgrd" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
+        .check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    )
-    .repeat(requests, "i") {
+    ).exec {
+          session =>
+          println(session("token").as[String])
+          session
+    }.repeat(requests, "i") {
       exec(ws("document:create")
-        .sendText(query)
-        .await(1 seconds)(
+        .sendText(
+            """
+          {
+            "controller": "document",
+            "action": "create",
+            "index": "nyc-open-data",
+            "collection": "yellow-taxi",
+            "body": """ + document + """,
+            "jwt": "${token}"
+          }
+            """
+        ).await(1 seconds)(
           ws.checkTextMessage("document created").check(regex(".*200.*"))
         )
       )
-    }
-    .exec(ws("Close connection").close)
-
+    }.exec(ws("Close connection").close)
   setUp(scn.inject(
     rampUsers(users) during (duration seconds)
   ).protocols(httpProtocol))

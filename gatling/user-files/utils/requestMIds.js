@@ -1,9 +1,8 @@
-var rp = require('request-promise');
+const rp = require('request-promise');
 const fs = require('fs');
-const args = process.argv.slice(2);
-let i = parseInt(args[0]);
+let i = parseInt(process.argv[2]) || 1;
 
-var options = {
+const options = {
     method: 'POST',
     uri: 'http://localhost:7512/nyc-open-data/yellow-taxi/_create',
     body: {
@@ -13,14 +12,14 @@ var options = {
     json: true
 };
  
-var tab_ids = [];
+const tab_ids = [];
 const retrieve_ids = async () => {
     for (; i > 0; i--) {
         try {
             const parsedBody = await rp(options)            
-            tab_ids.push(parsedBody["result"]._id)
+            tab_ids.push(parsedBody.result._id)
         } catch (error) {
-            
+            console.log(error);
         }
     }
     fs.writeFileSync('./ids.txt', JSON.stringify(tab_ids).replace(/,/g, ', '));

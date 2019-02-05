@@ -1,19 +1,3 @@
-/*
- * Copyright 2011-2018 GatlingCorp (https://gatling.io)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package computerdatabase
 
 import io.gatling.core.Predef._
@@ -44,16 +28,6 @@ class WsCreateOrReplaceDocument extends Simulation {
     }
   """
 
-  val query = """
-    {
-      "controller": "document",
-      "action": "createOrReplace",
-      "index": "nyc-open-data",
-      "collection": "yellow-taxi",
-      "_id": "F4KEID",
-      "body": """ + document + """
-    }
-  """
 
   val httpProtocol = http
     .baseUrl("http://" + host + ":7512")
@@ -69,11 +43,27 @@ class WsCreateOrReplaceDocument extends Simulation {
       .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "yo", "password": "wwkxgrd" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
+        check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    )
-    .repeat(requests, "i") {
+    ).exec {
+          session =>
+          println(session("token").as[String])
+          session
+    }.repeat(requests, "i") {
       exec(ws("document:create or replace")
-        .sendText(query)
+        .sendText(
+          """
+          {
+            "controller": "document",
+            "action": "createOrReplace",
+            "index": "nyc-open-data",
+            "collection": "yellow-taxi",
+            "_id": "F4KEID",
+            "body": """ + document + """,
+            "jwt" : "${token}"
+          }
+          """
+        )
         .await(1 seconds)(
           ws.checkTextMessage("document created/replaced").check(regex(".*200.*"))
         )
