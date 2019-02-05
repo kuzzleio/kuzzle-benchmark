@@ -40,7 +40,7 @@ class HttpBulkImport extends Simulation {
   val scn = scenario("Http bulk import")
     .repeat(requests, "i") {
       exec(http("bulk:import")
-        .post("http://" + host + ":7512/nyc-open-data/yellow-taxi/_bulk")
+        .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_bulk")
         .header("Bearer", jwt)
         .body(StringBody(bulkData)).asJson
         .check(status.is(200))
