@@ -4,7 +4,6 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import sys.process._
-import scala.collection.mutable.ArrayBuffer
 
 class WsMCreateOrReplaceDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
@@ -33,15 +32,14 @@ class WsMCreateOrReplaceDocument extends Simulation {
         }
     }
     """ 
-  val docs = new ArrayBuffer[String]()
+  var docs = ""
   var it = 1
-  docs.append("""{"documents": [  """)
+  docs += """{"documents": [  """
   for (i <- 1 to 199) {
-    docs.append(doc)
-    docs.append(",")
+    docs += doc + ","
   }
-  docs.append(doc)
-  docs.append("""]}""")
+  docs += doc
+  docs += """]}"""
 
   val httpProtocol = http
       .baseUrl("http://" + host + ":7512")
