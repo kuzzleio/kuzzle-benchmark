@@ -4,14 +4,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import sys.process._
-
-import java.io._
-import java.net._
-import scala.util.Try
-import scala.util.parsing.json._
-import scala.util.{Failure, Success}
-import scala.util.parsing.json.JSON
-
+import scala.collection.mutable.ArrayBuffer
 
 class WsMCreateOrReplaceDocument extends Simulation {
   val host = System.getProperty("host", "localhost")
@@ -20,10 +13,36 @@ class WsMCreateOrReplaceDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
   var jwt = System.getProperty("jwt", "some jwt")
 
-  val input_file = "./user-files/utils/documents.json"
-  val docs = scala.io.Source.fromFile(input_file).mkString
+  val doc = """
+    {
+      "body":
+        {
+          "driver": {
+            "name": "Eltooooon",
+            "age": 42,
+            "license": "B"
+          },
 
-  
+          "car": {
+            "position": {
+              "lat": 42.83734827,
+              "lng": 8.298382039
+            },
+            "type": "berline"
+          }
+        }
+    }
+    """ 
+  val docs = new ArrayBuffer[String]()
+  var it = 1
+  docs.append("""{"documents": [  """)
+  for (i <- 1 to 199) {
+    docs.append(doc)
+    docs.append(",")
+  }
+  docs.append(doc)
+  docs.append("""]}""")
+
   val httpProtocol = http
       .baseUrl("http://" + host + ":7512")
       .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -53,7 +72,7 @@ class WsMCreateOrReplaceDocument extends Simulation {
             "controller": "document",
             "action": "mCreateOrReplace",
             "jwt": "${token}",
-            "body": """ + docs +  """
+            "body": """ + docs.mkString +  """
           }
           """
         )

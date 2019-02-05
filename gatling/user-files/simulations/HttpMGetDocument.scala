@@ -13,7 +13,7 @@ class HttpMGetDocument extends Simulation {
   var jwt = System.getProperty("jwt", "some jwt")
 
   println("Creating files for test. This may take a minute.")
-  val result = Process("node ./user-files/utils/requestMIds 2000")
+  val result = Process("node ./user-files/utils/requestMIdsMCreate 4")
   val exitCode = result.!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
