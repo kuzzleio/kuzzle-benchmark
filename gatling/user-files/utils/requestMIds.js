@@ -1,6 +1,6 @@
 const rp = require('request-promise');
 const fs = require('fs');
-let i = parseInt(process.argv[2]) || 1;
+let count = parseInt(process.argv[2]) || 1;
 
 const doc = 
 {
@@ -22,7 +22,7 @@ const doc =
     }
 }; 
 const docs = [];  
-for (let it_doc = 0; it_doc < 200; it_doc++)
+for (let it = 0; it < 200; it++)
     docs.push(doc);
 const content = JSON.parse('{ \"documents\": ' + JSON.stringify(docs) + '}');
 const options = {
@@ -34,7 +34,7 @@ const options = {
 
 const tab_ids = [];
 const retrieve_ids = async () => {
-    for (; i > 0; i--) {
+    for (; count > 0; count--) {
         try {
             const parsedBody = await rp(options)
             for (let it = 0; parsedBody.result.hits[it]; ++it)            
