@@ -29,7 +29,7 @@ class WsMGetDocument extends Simulation {
     .exec(ws("Connect client").connect("/"))
     .pause(1)
     .exec(ws("Login")
-      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "yo", "password": "wwkxgrd" } }""")
+      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "test", "password": "test" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
         check(jsonPath("$.result.jwt").find.saveAs("token"))
