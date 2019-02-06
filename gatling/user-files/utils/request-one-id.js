@@ -4,7 +4,7 @@ const
 
 const options = {
   method: 'POST',
-  uri: 'http://localhost:7512/nyc-open-data/yellow-taxi/_create',
+  uri: 'http://dev-sandbox-kuzzle-474771484.us-east-2.elb.amazonaws.com:7512/nyc-open-data/yellow-taxi/_create',
   body: {
     user: 'yo',
     pwd: 'nodenodenode'

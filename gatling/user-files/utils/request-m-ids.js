@@ -25,7 +25,7 @@ for (let it = 0; it < 200; it++) {docs.push(doc);}
 const content = JSON.parse('{ "documents": ' + JSON.stringify(docs) + '}');
 const options = {
   method: 'POST',
-  uri: 'http://localhost:7512/nyc-open-data/yellow-taxi/_mCreate',
+  uri: 'http://dev-sandbox-kuzzle-474771484.us-east-2.elb.amazonaws.com:7512/nyc-open-data/yellow-taxi/_mCreate',
   body: content,
   json: true
 };
