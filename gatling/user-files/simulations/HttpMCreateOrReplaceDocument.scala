@@ -10,7 +10,6 @@ class HttpMCreateOrReplaceDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
 
   val doc = """
     {
@@ -33,7 +32,6 @@ class HttpMCreateOrReplaceDocument extends Simulation {
     }
     """ 
   var docs = ""
-  var it = 1
   docs += """{"documents": [  """
   for (i <- 1 to 199) {
     docs += doc + ","
@@ -48,10 +46,14 @@ class HttpMCreateOrReplaceDocument extends Simulation {
     .userAgentHeader("Gatling2")
 
   val scn = scenario("Http mcreate or replace document")
-    .repeat(requests, "i") {
+    .exec(http("login")
+    .post(s"http://${host}:7512/_login/local")
+    .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson
+    .check(jsonPath("$.result.jwt").find.saveAs("jwt"))
+    ).repeat(requests, "i") {
       exec(http("document:mCreateOrReplace")
         .put(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mCreateOrReplace")
-        .header("Bearer", jwt)
+        .header("Bearer", "${jwt}")
         .body(StringBody(docs.mkString)).asJson
         .check(status.is(200))
       )

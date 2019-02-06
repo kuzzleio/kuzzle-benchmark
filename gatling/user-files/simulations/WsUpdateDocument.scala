@@ -12,8 +12,7 @@ class WsUpdateDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val result = Process("node ./user-files/utils/requestOneId")
-  val exitCode = result.!
+  Process("node ./user-files/utils/request-one-id").!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
 
@@ -22,8 +21,6 @@ class WsUpdateDocument extends Simulation {
         "user": "jc" 
       }
   """
-
-
   val httpProtocol = http
     .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")

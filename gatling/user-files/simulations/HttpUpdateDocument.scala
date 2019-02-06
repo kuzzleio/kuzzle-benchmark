@@ -10,7 +10,6 @@ class HttpUpdateDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val requests = System.getProperty("requests", "2000").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
   
   val document = """
       {
@@ -18,8 +17,7 @@ class HttpUpdateDocument extends Simulation {
       }
   """
 
-  val result = Process("node ./user-files/utils/requestOneId")
-  val exitCode = result.!
+  Process("node ./user-files/utils/request-one-id").!
   val input_file = "./id.txt"
   var id = scala.io.Source.fromFile(input_file).mkString
   val httpProtocol = http
@@ -29,10 +27,14 @@ class HttpUpdateDocument extends Simulation {
     .userAgentHeader("Gatling2")
 
   val scn = scenario("Http update document")
-    .repeat(requests, "i") {
+    .exec(http("login")
+    .post(s"http://${host}:7512/_login/local")
+    .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson
+    .check(jsonPath("$.result.jwt").find.saveAs("jwt"))
+    ).repeat(requests, "i") {
     exec(http("document:update")
         .put(s"http://${host}:7512/nyc-open-data/yellow-taxi/${id}/_update")
-        .header("Bearer", jwt)
+        .header("Bearer", "${jwt}")
         .body(StringBody(document)).asJson
         .check(status.is(200))
       )

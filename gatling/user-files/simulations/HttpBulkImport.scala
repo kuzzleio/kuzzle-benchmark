@@ -9,7 +9,6 @@ class HttpBulkImport extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
 
   val bulkData = """ 
     {
@@ -38,10 +37,14 @@ class HttpBulkImport extends Simulation {
     .userAgentHeader("Gatling2")
 
   val scn = scenario("Http bulk import")
-    .repeat(requests, "i") {
+    .exec(http("login")
+    .post(s"http://${host}:7512/_login/local")
+    .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson
+    .check(jsonPath("$.result.jwt").find.saveAs("jwt"))
+    ).repeat(requests, "i") {
       exec(http("bulk:import")
         .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_bulk")
-        .header("Bearer", jwt)
+        .header("Bearer", "${jwt}")
         .body(StringBody(bulkData)).asJson
         .check(status.is(200))
       )

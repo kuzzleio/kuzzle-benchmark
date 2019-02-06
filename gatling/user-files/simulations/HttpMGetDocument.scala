@@ -10,11 +10,9 @@ class HttpMGetDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
 
   println("Creating files for test. This may take a minute.")
-  val result = Process("node ./user-files/utils/requestMIds")
-  val exitCode = result.!
+  Process("node ./user-files/utils/request-m-ids").!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
   val httpProtocol = http
@@ -24,10 +22,14 @@ class HttpMGetDocument extends Simulation {
     .userAgentHeader("Gatling2")
 
   val scn = scenario("Http mget document")
-    .repeat(requests, "i") {
+    .exec(http("login")
+    .post(s"http://${host}:7512/_login/local")
+    .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson
+    .check(jsonPath("$.result.jwt").find.saveAs("jwt"))
+    ).repeat(requests, "i") {
       exec(http("document:mget")
         .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mGet")
-        .header("Bearer", jwt)
+        .header("Bearer", "${jwt}")
         .body(StringBody(s""" { "ids": ${ids} }""")).asJson      
         .check(status.is(200))
       )

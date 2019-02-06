@@ -10,14 +10,11 @@ class WsMGetDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
 
   println("Creating files for test. This may take a minute.")
-  val result = Process("node ./user-files/utils/requestMIds")
-  val exitCode = result.!
+  Process("node ./user-files/utils/request-m-ids").!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
-
 
   val httpProtocol = http
       .baseUrl(s"http://${host}:7512")

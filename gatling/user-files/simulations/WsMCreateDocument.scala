@@ -10,7 +10,6 @@ class WsMCreateDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  var jwt = System.getProperty("jwt", "some jwt")
 
   val doc = """
     {
@@ -33,7 +32,6 @@ class WsMCreateDocument extends Simulation {
     }
     """ 
   var docs = ""
-  var it = 1
   docs += """{"documents": [  """
   for (i <- 1 to 199) {
     docs += doc + ","
