@@ -28,7 +28,7 @@ class HttpMGetDocument extends Simulation {
       exec(http("document:mget")
         .post(s"http://${host}:7512/nyc-open-data/yellow-taxi/_mGet")
         .header("Bearer", jwt)
-        .body(StringBody(""" { "ids": """ + ids + """ }""")).asJson      
+        .body(StringBody(s""" { "ids": ${ids} }""")).asJson      
         .check(status.is(200))
       )
     }
