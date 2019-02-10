@@ -10,10 +10,13 @@ class HttpBulkImport extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-  val bulkData = """ 
+  var bulkData = """ 
     {
       "bulkData": 
-      [{
+      [
+    """
+    val doc = """
+      {
         "index": {
           "_index": "nyc-open-data",
           "_type": "yellow-taxi"
@@ -26,17 +29,19 @@ class HttpBulkImport extends Simulation {
           "lat": 45.045626,
           "lon": 4.846281
         }
-      }]
-    }
+      }
       """
-
+  for (i <- 0 to 2000)
+    bulkData += doc + ","
+  bulkData += doc
+  bulkData += """]}"""
   val httpProtocol = http
     .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http bulk import")
+  val scn = scenario("Http bulk:import")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

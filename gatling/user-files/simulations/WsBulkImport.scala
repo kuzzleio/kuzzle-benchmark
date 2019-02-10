@@ -10,26 +10,31 @@ class WsBulkImportDocument extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
 
-   val bulkData = """ 
+  var bulkData = """ 
     {
       "bulkData": 
-      [{
-        "index": {
-          "_index": "nyc-open-data",
-          "_type": "yellow-taxi"
-        }
-      },
-      {
-        "name": "FCA-Ardepharm",
-        "radius": 25,
-        "location": {
-          "lat": 45.045626,
-          "lon": 4.846281
-        }
-      }]
+      [
+    """
+  val doc = """
+    {
+      "index": {
+        "_index": "nyc-open-data",
+        "_type": "yellow-taxi"
+      }
+    },
+    {
+      "name": "FCA-Ardepharm",
+      "radius": 25,
+      "location": {
+        "lat": 45.045626,
+        "lon": 4.846281
+      }
     }
-      """
-
+    """
+  for (i <- 0 to 2000)
+    bulkData += doc + ","
+  bulkData += doc
+  bulkData += """]}"""
   val httpProtocol = http
     .baseUrl(s"http://${host}:7512")
     .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -46,12 +51,8 @@ class WsBulkImportDocument extends Simulation {
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
         check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    ).exec {
-          session =>
-          println(session("token").as[String])
-          session
-    }.repeat(requests, "i") {
-      exec(ws("document:bulk")
+    ).repeat(requests, "i") {
+      exec(ws("bulk:import")
         .sendText(
           """
             {

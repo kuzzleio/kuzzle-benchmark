@@ -28,6 +28,7 @@ class WsCreateOrReplaceDocument extends Simulation {
     }
   """
 
+  val feeder = csv("./user-files/utils/ids-feeder.csv").random
 
   val httpProtocol = http
     .baseUrl(s"http://${host}:7512")
@@ -39,18 +40,15 @@ class WsCreateOrReplaceDocument extends Simulation {
   val scn = scenario("WebSocket create or replace document")
     .exec(ws("Connect client").connect("/"))
     .pause(1)
+    .feed(feeder)
     .exec(ws("Login")
       .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "test", "password": "test" } }""")
       .await(30 seconds)(
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
         check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    ).exec {
-          session =>
-          println(session("token").as[String])
-          session
-    }.repeat(requests, "i") {
-      exec(ws("document:create or replace")
+    ).repeat(requests, "i") {
+      exec(ws("document:createOrReplace")
         .sendText(
           """
           {
@@ -58,8 +56,8 @@ class WsCreateOrReplaceDocument extends Simulation {
             "action": "createOrReplace",
             "index": "nyc-open-data",
             "collection": "yellow-taxi",
-            "_id": "F4KEID",
             "body": """ + document + """,
+            "_id": "${id}", 
             "jwt" : "${token}"
           }
           """
@@ -67,7 +65,7 @@ class WsCreateOrReplaceDocument extends Simulation {
         .await(1 seconds)(
           ws.checkTextMessage("document created/replaced").check(regex(".*200.*"))
         )
-      )
+      ).feed(feeder)
     }
     .exec(ws("Close connection").close)
 

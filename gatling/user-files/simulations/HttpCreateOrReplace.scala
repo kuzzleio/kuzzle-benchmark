@@ -9,7 +9,7 @@ class HttpCreateOrReplaceDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-
+  val feeder = csv("./user-files/utils/ids-feeder.csv").random
   val document = """
     {
       "driver": {
@@ -34,18 +34,19 @@ class HttpCreateOrReplaceDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http create or replace document")
+  val scn = scenario("Http document:createOrReplace")
+    .feed(feeder)
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson
     .check(jsonPath("$.result.jwt").find.saveAs("jwt"))
     ).repeat(requests, "i") {
-      exec(http("document:createorreplace")
-        .put(s"http://${host}:7512/nyc-open-data/yellow-taxi/14BJ81B")
+      exec(http("document:createOrReplace")
+        .put("http://" + host + ":7512/nyc-open-data/yellow-taxi/${id}")
         .header("Bearer", "${jwt}")
         .body(StringBody(document)).asJson
         .check(status.is(200))
-      )
+      ).feed(feeder)
     }
 
   setUp(scn.inject(

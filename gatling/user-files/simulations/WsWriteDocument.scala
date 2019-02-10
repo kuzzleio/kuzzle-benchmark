@@ -43,11 +43,7 @@ class WsWriteDocument extends Simulation {
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
         .check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    ).exec {
-          session =>
-          println(session("token").as[String])
-          session
-    }.repeat(requests, "i") {
+    ).repeat(requests, "i") {
       exec(ws("document:create")
         .sendText(
             """

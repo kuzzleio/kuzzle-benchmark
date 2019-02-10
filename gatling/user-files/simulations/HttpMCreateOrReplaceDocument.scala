@@ -45,7 +45,7 @@ class HttpMCreateOrReplaceDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http mcreate or replace document")
+  val scn = scenario("Http document:mCreateOrReplace")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

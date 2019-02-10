@@ -34,7 +34,7 @@ class HttpWriteDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http write document")
+  val scn = scenario("Http document:write")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

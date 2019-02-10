@@ -12,7 +12,7 @@ class HttpMGetDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
 
   println("Creating files for test. This may take a minute.")
-  Process("node ./user-files/utils/request-m-ids").!
+  Process(s"node ./user-files/utils/request-m-ids ${host}").!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
   val httpProtocol = http
@@ -21,7 +21,7 @@ class HttpMGetDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http mget document")
+  val scn = scenario("Http document:mGet")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

@@ -30,7 +30,7 @@ class HttpReplaceDocument extends Simulation {
       }
     """
 
-  Process("node ./user-files/utils/request-one-id").!
+  Process(s"node ./user-files/utils/request-one-id ${host}").!
   val input_file = "./id.txt"
   val id = scala.io.Source.fromFile(input_file).mkString
 
@@ -40,7 +40,7 @@ class HttpReplaceDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http replace document")
+  val scn = scenario("Http document:replace")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

@@ -17,7 +17,7 @@ class HttpUpdateDocument extends Simulation {
       }
   """
 
-  Process("node ./user-files/utils/request-one-id").!
+  Process(s"node ./user-files/utils/request-one-id ${host}").!
   val input_file = "./id.txt"
   var id = scala.io.Source.fromFile(input_file).mkString
   val httpProtocol = http
@@ -26,7 +26,7 @@ class HttpUpdateDocument extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .userAgentHeader("Gatling2")
 
-  val scn = scenario("Http update document")
+  val scn = scenario("Http document:update")
     .exec(http("login")
     .post(s"http://${host}:7512/_login/local")
     .body(StringBody("""{ "username": "test", "password": "test" }""")).asJson

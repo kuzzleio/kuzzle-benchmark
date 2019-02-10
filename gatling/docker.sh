@@ -7,10 +7,9 @@ docker run -it --rm \
   --network host \
   kuzzleio/gatling-kuzzle
 
+
 retVal=$?
 if [ $retVal -eq 0 ]; then
-  echo "\n"
   echo "Reports available on web server running on :8000"
-  echo "\n"
   ruby -run -e httpd ./results -p 8000
 fi

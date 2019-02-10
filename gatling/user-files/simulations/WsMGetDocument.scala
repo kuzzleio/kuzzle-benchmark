@@ -12,7 +12,7 @@ class WsMGetDocument extends Simulation {
   val duration = System.getProperty("duration", "1").toInt
 
   println("Creating files for test. This may take a minute.")
-  Process("node ./user-files/utils/request-m-ids").!
+  Process(s"node ./user-files/utils/request-m-ids ${host}").!
   val input_file = "./ids.txt"
   val ids = scala.io.Source.fromFile(input_file).mkString
 
@@ -31,12 +31,8 @@ class WsMGetDocument extends Simulation {
         ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
         check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
-    ).exec {
-          session =>
-          println(session("token").as[String])
-          session
-    }.repeat(requests, "i") {
-      exec(ws("document:mget")
+    ).repeat(requests, "i") {
+      exec(ws("document:mGet")
         .sendText(
           """
           {
