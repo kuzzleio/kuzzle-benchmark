@@ -28,7 +28,7 @@ class WsCreateOrReplaceDocument extends Simulation {
     }
   """
 
-  val feeder = csv("./user-files/utils/ids-feeder.csv").random
+  val feeder = csv("./user-files/utils/ids-feeder.csv")
 
   val httpProtocol = http
     .baseUrl(s"http://${host}:7512")

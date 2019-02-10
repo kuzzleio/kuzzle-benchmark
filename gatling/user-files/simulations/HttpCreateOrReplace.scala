@@ -9,7 +9,7 @@ class HttpCreateOrReplaceDocument extends Simulation {
   val requests = System.getProperty("requests", "2000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
-  val feeder = csv("./user-files/utils/ids-feeder.csv").random
+  val feeder = csv("./user-files/utils/ids-feeder.csv")
   val document = """
     {
       "driver": {
