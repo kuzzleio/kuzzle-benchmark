@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 docker run -it --rm \
   -v "$(pwd)/user-files/:/opt/gatling/user-files" \
