@@ -2,8 +2,8 @@ const
   rp = require('request-promise'),
   host = process.argv[2] || 'localhost';
 
-const doit = async (id) => {
-  for (let it = 1; it < 100; ++it, ++id) {  
+const doit = async startingId => {
+  for (let id = startingId || 1; id < startingId + 100; ++id) {  
     try {
       let options = {
         method: 'DELETE',
@@ -20,10 +20,9 @@ const doit = async (id) => {
 };
 const delete_users = async () => {
   try {
-    let id = 1;
-    for (let it = 1; it <= 20; ++it) {
-      await doit(id);
-      id += 100;
+    const usersBundleSize = 100;
+    for (let it = 0; it < 20; ++it) {
+      await doit(usersBundleSize * it);
     }
   } catch (error) {
     // eslint-disable-next-line no-console

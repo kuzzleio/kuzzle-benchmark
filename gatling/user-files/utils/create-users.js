@@ -2,8 +2,8 @@ const
   rp = require('request-promise'),
   host = process.argv[2] || 'localhost';
 
-const doit = (id) => {
-  for (let it = 1; it < 100; ++it, ++id) {  
+const doit = startingId => {
+  for (let id = startingId || 1; id < startingId + 100; ++id) {  
     try {
       let options = {
         method: 'POST',
@@ -32,11 +32,10 @@ const doit = (id) => {
   }
 };
 const create_users = async () => {
-  let id = 1;
-  for (let it = 1; it <= 20; ++it) {
+  const usersBundleSize = 100;
+  for (let it = 0; it < 20; ++it) {
     try {
-      await doit(id);
-      id += 100;
+      await doit(usersBundleSize * it);
     }
     catch (error) {
       // eslint-disable-next-line no-console
