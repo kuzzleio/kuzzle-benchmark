@@ -7,7 +7,7 @@
   "bin": {},
   "scripts": {
     "start": "node --max_old_space_size=2048 index.js",
-    "lint": "eslint --max-warnings=0 ./lib"
+    "lint": "eslint -c ./.eslintrc.json --max-warnings=0 ./gatling/user-files/utils/*.js"
   },
   "directories": {
     "features": "features"
@@ -15,11 +15,13 @@
   "dependencies": {
     "async": "^2.6.1",
     "bluebird": "^3.5.1",
+    "kuzzle-sdk": "^6.0.0-beta-6",
     "log-update": "^2.3.0",
     "moment": "^2.22.2",
     "random-js": "^1.0.8",
     "rc": "^1.2.8",
-    "request": "^2.87.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
     "uws": "^10.148.0"
   },
   "repository": {
