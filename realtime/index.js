@@ -1,17 +1,18 @@
-const
-  readline = require('readline'),
+const readline = require('readline'),
   Client = require('./client');
 
 function askQuestion(query) {
   const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
+    input: process.stdin,
+    output: process.stdout
   });
 
-  return new Promise(resolve => rl.question(query, ans => {
+  return new Promise(resolve =>
+    rl.question(query, ans => {
       rl.close();
       resolve(ans);
-  }))
+    })
+  );
 }
 
 const host = 'localhost';
@@ -25,14 +26,11 @@ const createClient = () => {
   const client = new Client(clientId, host, port, expectedNotifications);
   clientId += 1;
 
-  return client.connect()
-    .then(() => {
-      client.start()
-      return client
-    });
-}
-
-
+  return client.connect().then(() => {
+    client.start();
+    return client;
+  });
+};
 
 const clients = [];
 
@@ -49,22 +47,24 @@ const run = async () => {
   clients.forEach(client => {
     client.report();
     client.stop();
-  })
+  });
 
   let ko = 0;
   let missing = 0;
-  let missing2 = 0;
+  // let missing2 = 0;
 
   for (const client of clients) {
     if (client.ko()) {
       ko += 1;
-      missing += expectedNotifications - client.notificationsCount;
+      // missing += expectedNotifications - client.notificationsCount;
     }
-    missing2 += expectedNotifications - client.notificationsCount;
+    missing += expectedNotifications - client.notificationsCount;
   }
-  console.log(`${ko} client does not receive ${expectedNotifications} notifications`)
-  console.log(`${missing} total notifications are missing`)
-}
+  console.log(
+    `${ko} client does not receive ${expectedNotifications} notifications`
+  );
+  console.log(`${missing} total notifications are missing`);
+};
 
 run();
 

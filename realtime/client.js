@@ -1,12 +1,7 @@
-const
-  fs = require('fs'),
-  {
-    Kuzzle,
-    WebSocket
-  } = require('kuzzle-sdk');
+const { Kuzzle, WebSocket } = require('kuzzle-sdk');
 
 class Client {
-  constructor (id, host, port, expectedNotifications) {
+  constructor(id, host, port, expectedNotifications) {
     this.id = id;
     this.expectedNotifications = expectedNotifications;
     this.kuzzle = new Kuzzle(
@@ -35,46 +30,57 @@ class Client {
     });
   }
 
-  connect () {
+  connect() {
     return this.kuzzle.connect();
   }
 
-  login (strategy, credentials) {
+  login(strategy, credentials) {
     return this.kuzzle.auth.login(strategy, credentials);
   }
 
-  async start () {
+  async start() {
     this.room = await this.kuzzle.realtime.subscribe(
       'nyc-open-data',
       'yellow-taxi',
       {
         exists: 'licence'
       },
-      notification => this.notificationsCount += 1
+      () => (this.notificationsCount += 1)
     );
   }
 
-  stop () {
-    return this.kuzzle.realtime.unsubscribe(this.room)
+  stop() {
+    return this.kuzzle.realtime
+      .unsubscribe(this.room)
       .then(() => this.kuzzle.disconnect());
   }
 
-  ok () {
-    return this.notificationsCount === this.expectedNotifications
+  ok() {
+    return this.notificationsCount === this.expectedNotifications;
   }
 
-  ko () {
-    return !this.ok()
+  ko() {
+    return !this.ok();
   }
 
-  report () {
+  report() {
     if (this.disconnectCount !== 0 || this.reconnectCount !== 0 || this.ko()) {
-      console.log("\n--------------------------------------------------------------------");
+      console.log(
+        '\n--------------------------------------------------------------------'
+      );
       if (this.ko()) {
-        console.log(`[Client ${this.id}] ${this.notificationsCount} notifications received`);
+        console.log(
+          `[Client ${this.id}] ${
+            this.notificationsCount
+          } notifications received`
+        );
       } else {
-        console.log(`[Client ${this.id}] ${this.disconnectCount} disconnected events`);
-        console.log(`[Client ${this.id}] ${this.reconnectCount} reconnect events`);
+        console.log(
+          `[Client ${this.id}] ${this.disconnectCount} disconnected events`
+        );
+        console.log(
+          `[Client ${this.id}] ${this.reconnectCount} reconnect events`
+        );
       }
     }
 
