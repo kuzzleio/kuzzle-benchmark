@@ -1,0 +1,44 @@
+package computerdatabase
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import scala.concurrent.duration._
+
+class WsAuthLogin extends Simulation {
+  val host = System.getProperty("host", "localhost")
+  val requests = System.getProperty("requests", "2000").toInt
+  val users = System.getProperty("users", "1").toInt
+  val duration = System.getProperty("duration", "1").toInt
+  val feeder = csv("./user-files/utils/users-feeder.csv")
+
+  val httpProtocol = http
+    .baseUrl(s"http://${host}:7512")
+    .acceptHeader("text/html,application/json,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+    .acceptEncodingHeader("gzip, deflate")
+    .userAgentHeader("Gatling2")
+    .wsBaseUrl(s"ws://${host}:7512")
+
+  val scn = scenario("WebSocket AuthLogin")
+    .exec(ws("Connect client").connect("/"))
+    .pause(1)
+    .feed(feeder)
+    .exec(ws("Login")
+      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "test", "password": "test" } }""")
+      .await(30 seconds)(
+        ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
+        check(jsonPath("$.result.jwt").find.saveAs("token"))
+      )
+    ).repeat(requests, "i") {
+      exec(ws("auth:login")
+        .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "${user}", "password": "test" } }""")
+        .await(1 seconds)(
+          ws.checkTextMessage("log success").check(regex(".*200.*"))
+        )
+      ).feed(feeder)
+    }
+    .exec(ws("Close connection").close)
+
+  setUp(scn.inject(
+    rampUsers(users) during (duration seconds)
+  ).protocols(httpProtocol))
+}

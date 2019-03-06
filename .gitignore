@@ -23,3 +23,5 @@ node_modules
 
 # overridden configuration
 .benchmarkrc
+
+.byebug_history
