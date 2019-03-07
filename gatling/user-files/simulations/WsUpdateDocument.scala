@@ -60,6 +60,21 @@ class WsUpdateDocument extends Simulation {
           )
       )
     }
+    .exec(
+      ws("publish:end")
+        .sendText(
+          """
+          {
+              "index": "nyc-open-data",
+              "collection": "yellow-taxi",
+              "controller": "realtime",
+              "action": "publish",
+              "jwt": "${token}",
+              "body": { "message": "end" }
+            }
+          """
+        )
+    )
     .exec(ws("Close connection").close)
 
   setUp(scn.inject(

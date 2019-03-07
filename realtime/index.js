@@ -1,5 +1,36 @@
-const readline = require('readline'),
-  Client = require('./client');
+const fs = require('fs'),
+  readline = require('readline'),
+  Client = require('./client'),
+  { Kuzzle, WebSocket } = require('kuzzle-sdk');
+
+function waitForTestEnd() {
+  return new Promise((resolve, reject) => {
+    const k = new Kuzzle(
+      new WebSocket(host, { port: port, sslConnection: port === 443 }),
+      { offlineMode: 'auto' }
+    );
+
+    k.connect()
+      .then(() => {
+        console.log('Waiting for benchmark to end...');
+        k.realtime.subscribe(
+          'nyc-open-data',
+          'yellow-taxi',
+          {
+            equals: {
+              message: 'end'
+            }
+          },
+          () => {
+            resolve(k);
+          }
+        );
+      })
+      .catch(err => {
+        reject(err);
+      });
+  });
+}
 
 function askQuestion(query) {
   const rl = readline.createInterface({
@@ -36,34 +67,41 @@ const clients = [];
 
 const run = async () => {
   const promises = [];
+  const reports = [];
   for (let i = 0; i < clientCount; ++i) {
     promises.push(createClient().then(client => clients.push(client)));
   }
   await Promise.all(promises);
   console.log(`${clientCount} clients connected\n`);
 
-  await askQuestion('Press a key to stop clients');
+  const k = await waitForTestEnd();
+  k.disconnect();
 
   clients.forEach(client => {
-    client.report();
+    reports.push(client.report());
     client.stop();
   });
 
-  let ko = 0;
-  let missing = 0;
-  // let missing2 = 0;
+  fs.writeFileSync('report.json', JSON.stringify(reports));
 
-  for (const client of clients) {
-    if (client.ko()) {
-      ko += 1;
-      // missing += expectedNotifications - client.notificationsCount;
-    }
-    missing += expectedNotifications - client.notificationsCount;
-  }
-  console.log(
-    `${ko} client does not receive ${expectedNotifications} notifications`
-  );
-  console.log(`${missing} total notifications are missing`);
+  console.log('Benchmark ended. Results written to report.json\n');
+  process.exit(0);
+
+  // let ko = 0;
+  // let missing = 0;
+  // // let missing2 = 0;
+
+  // for (const client of clients) {
+  //   if (client.ko()) {
+  //     ko += 1;
+  //     // missing += expectedNotifications - client.notificationsCount;
+  //   }
+  //   missing += expectedNotifications - client.notificationsCount;
+  // }
+  // console.log(
+  //   `${ko} client does not receive ${expectedNotifications} notifications`
+  // );
+  // console.log(`${missing} total notifications are missing`);
 };
 
 run();

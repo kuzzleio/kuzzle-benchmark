@@ -70,12 +70,18 @@ class Client {
   }
 
   report() {
-    console.log(
-      `[Client ${this.id}] - Received ${this.notificationsCount} / ${
-        this.expectedNotifications
-      } - Avg. Latency: ${this.notificationLatencySum /
-        this.notificationsCount}`
-    );
+    // console.log(
+    //   `[Client ${this.id}] - Received ${this.notificationsCount} / ${
+    //     this.expectedNotifications
+    //   } - Avg. Latency: ${this.notificationLatencySum /
+    //     this.notificationsCount}`
+    // );
+
+    return {
+      id: this.id,
+      notificationsCount: this.notificationsCount,
+      avgLatency: this.notificationLatencySum / this.notificationsCount
+    };
 
     // if (this.disconnectCount !== 0 || this.reconnectCount !== 0 || this.ko()) {
     //   console.log(
