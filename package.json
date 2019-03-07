@@ -7,7 +7,9 @@
   "bin": {},
   "scripts": {
     "start": "node --max_old_space_size=2048 index.js",
-    "lint": "eslint -c ./.eslintrc.json --max-warnings=0 ./gatling/user-files/utils/*.js"
+    "lint": "eslint -c ./.eslintrc.json --max-warnings=0 ./gatling/user-files/utils/*.js",
+    "gatling": "cd gatling; bash docker.sh",
+    "realtime": "cd realtime; node index.js"
   },
   "directories": {
     "features": "features"

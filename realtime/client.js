@@ -43,7 +43,7 @@ class Client {
       'nyc-open-data',
       'yellow-taxi',
       {
-        exists: 'licence'
+        exists: 'driver.license'
       },
       () => (this.notificationsCount += 1)
     );
