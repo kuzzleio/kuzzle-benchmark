@@ -16,6 +16,7 @@ class Client {
 
     this.notifications = [];
     this.notificationsCount = 0;
+    this.notificationLatencySum = 0;
 
     this.kuzzle.addListener('networkError', error => {
       console.error(error);
@@ -42,10 +43,15 @@ class Client {
     this.room = await this.kuzzle.realtime.subscribe(
       'nyc-open-data',
       'yellow-taxi',
-      {
-        exists: 'driver.license'
-      },
-      () => (this.notificationsCount += 1)
+      {},
+      notification => {
+        if (!notification.volatile || !notification.volatile.timestamp) {
+          return;
+        }
+        this.notificationLatencySum +=
+          Date.now() - notification.volatile.timestamp;
+        this.notificationsCount += 1;
+      }
     );
   }
 
@@ -64,25 +70,32 @@ class Client {
   }
 
   report() {
-    if (this.disconnectCount !== 0 || this.reconnectCount !== 0 || this.ko()) {
-      console.log(
-        '\n--------------------------------------------------------------------'
-      );
-      if (this.ko()) {
-        console.log(
-          `[Client ${this.id}] ${
-            this.notificationsCount
-          } notifications received`
-        );
-      } else {
-        console.log(
-          `[Client ${this.id}] ${this.disconnectCount} disconnected events`
-        );
-        console.log(
-          `[Client ${this.id}] ${this.reconnectCount} reconnect events`
-        );
-      }
-    }
+    console.log(
+      `[Client ${this.id}] - Received ${this.notificationsCount} / ${
+        this.expectedNotifications
+      } - Avg. Latency: ${this.notificationLatencySum /
+        this.notificationsCount}`
+    );
+
+    // if (this.disconnectCount !== 0 || this.reconnectCount !== 0 || this.ko()) {
+    //   console.log(
+    //     '\n--------------------------------------------------------------------'
+    //   );
+    //   if (this.ko()) {
+    //     console.log(
+    //       `[Client ${this.id}] ${
+    //         this.notificationsCount
+    //       } notifications received`
+    //     );
+    //   } else {
+    //     console.log(
+    //       `[Client ${this.id}] ${this.disconnectCount} disconnected events`
+    //     );
+    //     console.log(
+    //       `[Client ${this.id}] ${this.reconnectCount} reconnect events`
+    //     );
+    //   }
+    // }
 
     // fs.writeFileSync(`${this.id}-report.json`, JSON.stringify({
     //   disconnectCount: this.disconnectCount,

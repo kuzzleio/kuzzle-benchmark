@@ -18,7 +18,7 @@ function askQuestion(query) {
 const host = 'localhost';
 const port = 7512;
 const clientCount = 300;
-const expectedNotifications = 16500;
+const expectedNotifications = 1500;
 
 let clientId = 0;
 

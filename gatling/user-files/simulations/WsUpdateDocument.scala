@@ -38,23 +38,26 @@ class WsUpdateDocument extends Simulation {
         check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
     ).repeat(requests, "i") {
-      exec(ws("document:update")
-        .sendText(
-          """
-          {
-            "index": "nyc-open-data",
-            "collection": "yellow-taxi",
-            "controller": "document",
-            "action": "update",
-            "jwt": "${token}",
-            "_id" : """ + '"' + id + '"' +  """,
-            "body": """ + document + """
-          }
-          """
-        )
-        .await(1 seconds)(
-          ws.checkTextMessage("document updated").check(regex(".*200.*"))
-        )
+      exec(_.set("timestamp", System.currentTimeMillis))
+      .exec(
+        ws("document:update")
+          .sendText(
+            """
+            {
+              "index": "nyc-open-data",
+              "collection": "yellow-taxi",
+              "controller": "document",
+              "action": "update",
+              "jwt": "${token}",
+              "volatile": { "timestamp": ${timestamp} },
+              "_id" : """ + '"' + id + '"' +  """,
+              "body": """ + document + """
+            }
+            """
+          )
+          .await(1 seconds)(
+            ws.checkTextMessage("document updated").check(regex(".*200.*"))
+          )
       )
     }
     .exec(ws("Close connection").close)
