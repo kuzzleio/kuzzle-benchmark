@@ -48,7 +48,7 @@ function askQuestion(query) {
   );
 }
 
-const host = 'localhost';
+const host = config.target.host;
 const port = 7512;
 const clientCount = config.fixtures.clientCount;
 const expectedNotifications = 1500;
