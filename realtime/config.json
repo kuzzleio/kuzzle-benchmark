@@ -5,9 +5,9 @@
     "collection": "yellow-taxi"
   },
   "fixtures": {
-    "documentCount": 1000,
-    "clientCount": 300
+    "documentCount": 7500,
+    "clientCount": 5000
   },
-  "requestsPerSecond": 2,
-  "totalRequests": 100
+  "requestsPerSecond": 1500,
+  "totalRequests": 3000
 }
