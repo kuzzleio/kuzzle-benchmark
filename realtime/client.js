@@ -39,20 +39,29 @@ class Client {
     return this.kuzzle.auth.login(strategy, credentials);
   }
 
-  async start() {
-    this.room = await this.kuzzle.realtime.subscribe(
-      'nyc-open-data',
-      'yellow-taxi',
-      {},
-      notification => {
-        if (!notification.volatile || !notification.volatile.timestamp) {
-          return;
+  async start(options) {
+    try {
+      const filters = options.subscribeFilters || {};
+      this.room = await this.kuzzle.realtime.subscribe(
+        'nyc-open-data',
+        'yellow-taxi',
+        filters,
+        notification => {
+          if (!notification.volatile || !notification.volatile.timestamp) {
+            return;
+          }
+          this.notificationLatencySum +=
+            Date.now() - notification.volatile.timestamp;
+          this.notificationsCount += 1;
         }
-        this.notificationLatencySum +=
-          Date.now() - notification.volatile.timestamp;
-        this.notificationsCount += 1;
-      }
-    );
+      );
+
+      console.log(
+        `Client ${this.id} connected with filters ${JSON.stringify(filters)}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   stop() {

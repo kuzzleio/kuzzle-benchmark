@@ -9,6 +9,12 @@
       "request": "launch",
       "name": "Realtime",
       "program": "${workspaceFolder}/realtime/index.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Create docs with progressive ids",
+      "program": "${workspaceFolder}/fixtures/create-doc-progressive-id.js"
     }
   ]
 }

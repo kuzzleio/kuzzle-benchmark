@@ -1,5 +1,6 @@
 const fs = require('fs'),
   readline = require('readline'),
+  config = require('./config.json'),
   Client = require('./client'),
   { Kuzzle, WebSocket } = require('kuzzle-sdk');
 
@@ -23,6 +24,7 @@ function waitForTestEnd() {
           },
           () => {
             resolve(k);
+            k.disconnect();
           }
         );
       })
@@ -48,17 +50,14 @@ function askQuestion(query) {
 
 const host = 'localhost';
 const port = 7512;
-const clientCount = 300;
+const clientCount = config.fixtures.clientCount;
 const expectedNotifications = 1500;
 
-let clientId = 0;
-
-const createClient = () => {
+const createClient = (clientId, filters) => {
   const client = new Client(clientId, host, port, expectedNotifications);
-  clientId += 1;
 
   return client.connect().then(() => {
-    client.start();
+    client.start({ subscribeFilters: filters });
     return client;
   });
 };
@@ -68,23 +67,34 @@ const clients = [];
 const run = async () => {
   const promises = [];
   const reports = [];
-  for (let i = 0; i < clientCount; ++i) {
-    promises.push(createClient().then(client => clients.push(client)));
+
+  try {
+    for (let i = 0; i < clientCount; ++i) {
+      const filters = {
+        ids: {
+          values: [(i % config.fixtures.documentCount).toString()]
+        }
+      };
+      promises.push(
+        createClient(i, filters).then(client => clients.push(client))
+      );
+    }
+    await Promise.all(promises);
+    console.log(`${clientCount} clients connected\n`);
+
+    await waitForTestEnd();
+
+    clients.forEach(client => {
+      reports.push(client.report());
+      client.stop();
+    });
+
+    fs.writeFileSync('report.json', JSON.stringify(reports));
+
+    console.log('Benchmark ended. Results written to report.json\n');
+  } catch (error) {
+    console.error(error);
   }
-  await Promise.all(promises);
-  console.log(`${clientCount} clients connected\n`);
-
-  const k = await waitForTestEnd();
-  k.disconnect();
-
-  clients.forEach(client => {
-    reports.push(client.report());
-    client.stop();
-  });
-
-  fs.writeFileSync('report.json', JSON.stringify(reports));
-
-  console.log('Benchmark ended. Results written to report.json\n');
   process.exit(0);
 
   // let ko = 0;

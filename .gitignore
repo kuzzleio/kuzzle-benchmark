@@ -26,3 +26,4 @@ node_modules
 
 .byebug_history
 results
+report.json

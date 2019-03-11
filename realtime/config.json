@@ -1,0 +1,13 @@
+{
+  "target": {
+    "host": "localhost",
+    "index": "nyc-open-data",
+    "collection": "yellow-taxi"
+  },
+  "fixtures": {
+    "documentCount": 10,
+    "clientCount": 30
+  },
+  "requestsPerSecond": 2,
+  "totalRequests": 100
+}
