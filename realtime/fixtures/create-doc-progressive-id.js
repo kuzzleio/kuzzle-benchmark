@@ -18,7 +18,10 @@ const run = async () => {
         config.target.collection
       ))
     ) {
-      await kuzzle.collection.create(config.target.collection);
+      await kuzzle.collection.create(
+        config.target.index,
+        config.target.collection
+      );
     }
 
     for (let id = 0; id <= config.fixtures.documentCount; id++) {
