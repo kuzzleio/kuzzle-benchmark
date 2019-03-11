@@ -5,7 +5,6 @@ const kuzzle = new Kuzzle(new WebSocket(config.target.host));
 
 const run = async () => {
   await kuzzle.connect();
-  const promises = [];
 
   if (!(await kuzzle.index.exists(config.target.index))) {
     await kuzzle.index.create(config.target.index);
@@ -26,29 +25,19 @@ const run = async () => {
 
     for (let id = 0; id <= config.fixtures.documentCount; id++) {
       console.log(`Creating document number ${id}...`);
-      promises.push(
-        kuzzle.document
-          .create(
-            config.target.index,
-            config.target.collection,
-            {
-              driver: {
-                name: 'Sirkis',
-                licence: 'B'
-              }
-            },
-            id.toString()
-          )
-          .then(() => {
-            console.log(`Created document number ${id}.`);
-          })
-          .catch(err => {
-            console.error(err);
-          })
+      await kuzzle.document.create(
+        config.target.index,
+        config.target.collection,
+        {
+          driver: {
+            name: 'Sirkis',
+            licence: 'B'
+          }
+        },
+        id.toString()
       );
+      console.log(`Created document number ${id}.`);
     }
-
-    await Promise.all(promises);
   } catch (err) {
     console.error(err);
     kuzzle.disconnect();
