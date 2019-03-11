@@ -7,9 +7,11 @@ import sys.process._
 
 class SkyBettingSimulation extends Simulation {
   val host = System.getProperty("host", "localhost")
-  val requests = System.getProperty("requests", "20").toInt
+  val requests = System.getProperty("requests", "3000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
+  val requestsPerSecond = System.getProperty("requestsPerSecond", "10").toInt
+  val documentCount = System.getProperty("documentCount", "25").toInt
 
   val document = """
       {
@@ -33,9 +35,10 @@ class SkyBettingSimulation extends Simulation {
         check(jsonPath("$.result.jwt").find.saveAs("token"))
       )
     ).repeat(requests, "i") {
-      exec(_.set("timestamp", System.currentTimeMillis))
+      pace(1 / requestsPerSecond seconds)
+      .exec(_.set("timestamp", System.currentTimeMillis))
       .exec(session => {
-        session.set("myId", session("i").as[Int] % 10)
+        session.set("myId", session("i").as[Int] % documentCount)
       })
       .exec(ws("document:update")
             .sendText(
@@ -52,9 +55,9 @@ class SkyBettingSimulation extends Simulation {
               }
               """
             )
-            .await(1 seconds)(
-              ws.checkTextMessage("document updated").check(regex(".*200.*"))
-            )
+            //.await(1 seconds)(
+            //  ws.checkTextMessage("document updated").check(regex(".*200.*"))
+            //)
       )
     }
     .pause(30 seconds)
