@@ -1,12 +1,12 @@
 {
   "target": {
-    "host": "localhost",
+    "host": "sandbox.dev.kuzzle.io",
     "index": "nyc-open-data",
     "collection": "yellow-taxi"
   },
   "fixtures": {
-    "documentCount": 10,
-    "clientCount": 30
+    "documentCount": 1000,
+    "clientCount": 300
   },
   "requestsPerSecond": 2,
   "totalRequests": 100
