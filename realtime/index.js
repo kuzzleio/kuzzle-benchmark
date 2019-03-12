@@ -99,7 +99,10 @@ const run = async () => {
       client.stop();
     });
 
-    fs.writeFileSync('report.json', JSON.stringify(reports));
+    fs.writeFileSync(
+      `report-${Date.now()}-${process.pid}.json`,
+      JSON.stringify(reports)
+    );
 
     const avgReport = reports.reduce(
       (accumulator, currentValue) => {
