@@ -101,33 +101,30 @@ const run = async () => {
 
     fs.writeFileSync('report.json', JSON.stringify(reports));
 
-    console.log('Benchmark ended. Results written to report.json\n');
+    const avgReport = reports.reduce(
+      (accumulator, currentValue) => {
+        accumulator.notificationCount += currentValue.notificationCount;
+        accumulator.avgLatency += currentValue.avgLatency;
+        return accumulator;
+      },
+      { notificationCount: 0, avgLatency: 0 }
+    );
+
+    console.log('\n==================================================');
+    console.log('* Benchmark finished successfully\n*');
+    console.log(
+      `* Average notifications received: ${avgReport.notificationCount /
+        reports.length}`
+    );
+    console.log(
+      `* Average latency: ${avgReport.avgLatency / reports.length}\n*`
+    );
+    console.log('* Results written to report.json');
+    console.log('==================================================\n');
   } catch (error) {
     console.error(error);
   }
   process.exit(0);
-
-  // let ko = 0;
-  // let missing = 0;
-  // // let missing2 = 0;
-
-  // for (const client of clients) {
-  //   if (client.ko()) {
-  //     ko += 1;
-  //     // missing += expectedNotifications - client.notificationsCount;
-  //   }
-  //   missing += expectedNotifications - client.notificationsCount;
-  // }
-  // console.log(
-  //   `${ko} client does not receive ${expectedNotifications} notifications`
-  // );
-  // console.log(`${missing} total notifications are missing`);
 };
 
 run();
-
-// (async () => {
-//   const cli = new Client(1, host, port)
-//   await cli.connect()
-//   await cli.start()
-// })()

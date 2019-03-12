@@ -11,7 +11,7 @@ class SkyBettingSimulation extends Simulation {
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   val requestsPerSecond = System.getProperty("requestsPerSecond", "10").toInt
-  val documentCount = System.getProperty("documentCount", "25").toInt
+  val documentCount = System.getProperty("documentCount", "250").toInt
 
   val document = """
       {
@@ -29,30 +29,31 @@ class SkyBettingSimulation extends Simulation {
     .exec(ws("Connect client").connect("/"))
     .pause(1)
     .repeat(requests, "i") {
-      exec(_.set("timestamp", System.currentTimeMillis))
+      pace(1 / requestsPerSecond seconds)
+      .exec(_.set("timestamp", System.currentTimeMillis))
       .exec(session => {
         session.set("myId", session("i").as[Int] % documentCount)
       })
       .exec(ws("document:update")
-            .sendText(
-              """
-              {
-                "index": "nyc-open-data",
-                "collection": "yellow-taxi",
-                "controller": "document",
-                "action": "update",
-                "volatile": { "timestamp": ${timestamp} },
-                "_id" : "${myId}",
-                "body": """ + document + """
-              }
-              """
-            )
-            .await(1 seconds)(
-              ws.checkTextMessage("document updated").check(regex(".*200.*"))
-            )
+        .sendText(
+          """
+          {
+            "index": "nyc-open-data",
+            "collection": "yellow-taxi",
+            "controller": "document",
+            "action": "update",
+            "volatile": { "timestamp": ${timestamp} },
+            "_id" : "${myId}",
+            "body": """ + document + """
+          }
+          """
+        )
+        // .await(1 seconds)(
+        //   ws.checkTextMessage("document updated").check(regex(".*200.*"))
+        // )
       )
     }
-    .pause(30 seconds)
+    .pause(5 seconds)
     .exec(
       ws("publish:end")
         .sendText(

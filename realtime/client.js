@@ -15,7 +15,7 @@ class Client {
     this.reconnectCount = 0;
 
     this.notifications = [];
-    this.notificationsCount = 0;
+    this.notificationCount = 0;
     this.notificationLatencySum = 0;
 
     this.kuzzle.addListener('networkError', error => {
@@ -52,7 +52,7 @@ class Client {
           }
           this.notificationLatencySum +=
             Date.now() - notification.volatile.timestamp;
-          this.notificationsCount += 1;
+          this.notificationCount += 1;
         }
       );
 
@@ -71,7 +71,7 @@ class Client {
   }
 
   ok() {
-    return this.notificationsCount === this.expectedNotifications;
+    return this.notificationCount === this.expectedNotifications;
   }
 
   ko() {
@@ -80,16 +80,16 @@ class Client {
 
   report() {
     // console.log(
-    //   `[Client ${this.id}] - Received ${this.notificationsCount} / ${
+    //   `[Client ${this.id}] - Received ${this.notificationCount} / ${
     //     this.expectedNotifications
     //   } - Avg. Latency: ${this.notificationLatencySum /
-    //     this.notificationsCount}`
+    //     this.notificationCount}`
     // );
 
     return {
       id: this.id,
-      notificationsCount: this.notificationsCount,
-      avgLatency: this.notificationLatencySum / this.notificationsCount
+      notificationCount: this.notificationCount,
+      avgLatency: this.notificationLatencySum / this.notificationCount
     };
 
     // if (this.disconnectCount !== 0 || this.reconnectCount !== 0 || this.ko()) {
@@ -99,7 +99,7 @@ class Client {
     //   if (this.ko()) {
     //     console.log(
     //       `[Client ${this.id}] ${
-    //         this.notificationsCount
+    //         this.notificationCount
     //       } notifications received`
     //     );
     //   } else {
@@ -115,7 +115,7 @@ class Client {
     // fs.writeFileSync(`${this.id}-report.json`, JSON.stringify({
     //   disconnectCount: this.disconnectCount,
     //   reconnectCount: this.reconnectCount,
-    //   notificationsCount: this.notifications.length,
+    //   notificationCount: this.notifications.length,
     //   notifications: this.notifications
     // }));
   }
