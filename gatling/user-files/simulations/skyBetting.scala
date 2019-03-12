@@ -7,7 +7,7 @@ import sys.process._
 
 class SkyBettingSimulation extends Simulation {
   val host = System.getProperty("host", "localhost")
-  val requests = System.getProperty("requests", "3000").toInt
+  val requests = System.getProperty("requests", "1000").toInt
   val users = System.getProperty("users", "1").toInt
   val duration = System.getProperty("duration", "1").toInt
   val requestsPerSecond = System.getProperty("requestsPerSecond", "10").toInt
@@ -28,15 +28,8 @@ class SkyBettingSimulation extends Simulation {
   val scn = scenario("WebSocket update document")
     .exec(ws("Connect client").connect("/"))
     .pause(1)
-    .exec(ws("Login")
-      .sendText("""{"controller": "auth", "action": "login", "strategy": "local", "body": { "username": "test", "password": "test" } }""")
-      .await(30 seconds)(
-        ws.checkTextMessage("checkName").check(regex(".*jwt.*"))
-        check(jsonPath("$.result.jwt").find.saveAs("token"))
-      )
-    ).repeat(requests, "i") {
-      pace(1 / requestsPerSecond seconds)
-      .exec(_.set("timestamp", System.currentTimeMillis))
+    .repeat(requests, "i") {
+      exec(_.set("timestamp", System.currentTimeMillis))
       .exec(session => {
         session.set("myId", session("i").as[Int] % documentCount)
       })
@@ -48,16 +41,15 @@ class SkyBettingSimulation extends Simulation {
                 "collection": "yellow-taxi",
                 "controller": "document",
                 "action": "update",
-                "jwt": "${token}",
                 "volatile": { "timestamp": ${timestamp} },
                 "_id" : "${myId}",
                 "body": """ + document + """
               }
               """
             )
-            //.await(1 seconds)(
-            //  ws.checkTextMessage("document updated").check(regex(".*200.*"))
-            //)
+            .await(1 seconds)(
+              ws.checkTextMessage("document updated").check(regex(".*200.*"))
+            )
       )
     }
     .pause(30 seconds)
@@ -70,7 +62,6 @@ class SkyBettingSimulation extends Simulation {
               "collection": "yellow-taxi",
               "controller": "realtime",
               "action": "publish",
-              "jwt": "${token}",
               "body": { "message": "end" }
             }
           """

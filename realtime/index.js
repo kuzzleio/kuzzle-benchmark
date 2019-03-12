@@ -4,6 +4,13 @@ const fs = require('fs'),
   Client = require('./client'),
   { Kuzzle, WebSocket } = require('kuzzle-sdk');
 
+function awaitTime(milliseconds) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, milliseconds);
+  });
+}
 function waitForTestEnd() {
   return new Promise((resolve, reject) => {
     const k = new Kuzzle(
@@ -70,6 +77,9 @@ const run = async () => {
 
   try {
     for (let i = 0; i < clientCount; ++i) {
+      if (i % 50 === 0) {
+        await awaitTime(1000);
+      }
       const filters = {
         ids: {
           values: [(i % config.fixtures.documentCount).toString()]
