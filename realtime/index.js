@@ -82,7 +82,7 @@ const run = async () => {
       }
       const filters = {
         ids: {
-          values: ['10'] //(i % config.fixtures.documentCount).toString()
+          values: [(i % config.fixtures.documentCount).toString()]
         }
       };
       promises.push(

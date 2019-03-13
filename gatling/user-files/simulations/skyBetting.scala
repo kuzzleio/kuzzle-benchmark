@@ -21,12 +21,15 @@ class SkyBettingSimulation extends Simulation {
     .userAgentHeader("Gatling2")
     .wsBaseUrl(s"ws://${host}:7512")
 
-  val feeder = Iterator.continually(Map("id" -> "10"))
+  def feeder():Iterator[Map[String,String]] = {
+    val seq: Iterator[Int] = Iterator.from(1)
+    Iterator.continually(Map("id" -> (seq.next() % 250).toString))
+  }
 
   val scn = scenario("WebSocket update document")
     .exec(ws("Connect client").connect("/"))
     .pause(1)
-    .feed(feeder)
+    .feed(feeder())
     .exec(_.set("timestamp", System.currentTimeMillis))
     .exec(ws("document:update")
       .sendText(
