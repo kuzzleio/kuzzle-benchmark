@@ -7,11 +7,7 @@ import sys.process._
 
 class SkyBettingSimulation extends Simulation {
   val host = System.getProperty("host", "localhost")
-  val requests = System.getProperty("requests", "1000").toInt
-  val users = System.getProperty("users", "1").toInt
-  val duration = System.getProperty("duration", "1").toInt
-  val requestsPerSecond = System.getProperty("requestsPerSecond", "10").toInt
-  val documentCount = System.getProperty("documentCount", "250").toInt
+  val requestsPerSecond = System.getProperty("requestsPerSecond", "50").toInt
 
   val document = """
       {
@@ -25,52 +21,44 @@ class SkyBettingSimulation extends Simulation {
     .userAgentHeader("Gatling2")
     .wsBaseUrl(s"ws://${host}:7512")
 
+  val feeder = Iterator.continually(Map("id" -> "10"))
+
   val scn = scenario("WebSocket update document")
     .exec(ws("Connect client").connect("/"))
     .pause(1)
-    .repeat(requests, "i") {
-      pace(1 / requestsPerSecond seconds)
-      .exec(_.set("timestamp", System.currentTimeMillis))
-      .exec(session => {
-        session.set("myId", session("i").as[Int] % documentCount)
-      })
-      .exec(ws("document:update")
-        .sendText(
-          """
-          {
-            "index": "nyc-open-data",
-            "collection": "yellow-taxi",
-            "controller": "document",
-            "action": "update",
-            "volatile": { "timestamp": ${timestamp} },
-            "_id" : "${myId}",
-            "body": """ + document + """
-          }
-          """
-        )
-        // .await(1 seconds)(
-        //   ws.checkTextMessage("document updated").check(regex(".*200.*"))
-        // )
+    .feed(feeder)
+    .exec(_.set("timestamp", System.currentTimeMillis))
+    .exec(ws("document:update")
+      .sendText(
+        """
+        {
+          "index": "nyc-open-data",
+          "collection": "yellow-taxi",
+          "controller": "document",
+          "action": "update",
+          "volatile": { "timestamp": ${timestamp} },
+          "_id" : "${id}",
+          "body": """ + document + """
+        }
+        """
       )
-    }
-    .pause(5 seconds)
-    .exec(
-      ws("publish:end")
-        .sendText(
-          """
-          {
-              "index": "nyc-open-data",
-              "collection": "yellow-taxi",
-              "controller": "realtime",
-              "action": "publish",
-              "body": { "message": "end" }
-            }
-          """
-        )
+      .await(1 seconds)(
+        ws.checkTextMessage("document updated").check(regex(".*200.*"))
+      )
     )
     .exec(ws("Close connection").close)
 
-  setUp(scn.inject(
-    rampUsers(users) during (duration seconds)
-  ).protocols(httpProtocol))
+  after {
+    Process(s"node ./user-files/utils/test-end.js ${host}").!
+    println("FERME TA GUEULE TOI");
+  }
+
+  setUp(
+    scn
+      .inject(
+        rampUsersPerSec(1) to requestsPerSecond during (5 seconds),
+        constantUsersPerSec(requestsPerSecond) during (15 seconds)
+      )
+      .protocols(httpProtocol)
+  )
 }

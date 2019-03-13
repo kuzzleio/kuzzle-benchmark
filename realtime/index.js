@@ -82,7 +82,7 @@ const run = async () => {
       }
       const filters = {
         ids: {
-          values: [(i % config.fixtures.documentCount).toString()]
+          values: ['10'] //(i % config.fixtures.documentCount).toString()
         }
       };
       promises.push(
@@ -101,7 +101,7 @@ const run = async () => {
 
     fs.writeFileSync(
       `report-${Date.now()}-${process.pid}.json`,
-      JSON.stringify(reports)
+      JSON.stringify(reports, null, 2)
     );
 
     const avgReport = reports.reduce(
