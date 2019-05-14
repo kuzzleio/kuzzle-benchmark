@@ -15,6 +15,7 @@
   "dependencies": {
     "async": "^2.6.1",
     "bluebird": "^3.5.1",
+    "bufferutil": "^4.0.1",
     "kuzzle-sdk": "^6.0.0",
     "log-update": "^2.3.0",
     "moment": "^2.22.2",
@@ -22,7 +23,8 @@
     "rc": "^1.2.8",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "uws": "^10.148.0"
+    "utf-8-validate": "^5.0.2",
+    "ws": "^7.0.0"
   },
   "repository": {
     "type": "git",
