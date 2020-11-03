@@ -16,7 +16,7 @@
     "async": "^2.6.1",
     "bluebird": "^3.5.1",
     "bufferutil": "^4.0.1",
-    "kuzzle-sdk": "^6.0.0",
+    "kuzzle-sdk": "^7.4.1",
     "log-update": "^2.3.0",
     "moment": "^2.22.2",
     "random-js": "^1.0.8",
